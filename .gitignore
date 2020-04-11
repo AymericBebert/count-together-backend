@@ -1,0 +1,11 @@
+node_modules
+coverage
+dist
+.idea
+
+# MacOS files
+.DS_Store
+._*
+
+# Env
+.env

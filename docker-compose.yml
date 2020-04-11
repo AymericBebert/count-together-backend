@@ -1,0 +1,39 @@
+version: "3"
+services:
+  count_backend:
+    image: aymericbernard/count-together-backend:0.3.1
+    ports:
+      - "4050:4050"
+    container_name: count_together_backend
+    restart: always
+    networks:
+      - proxy
+      - internalcount
+    environment:
+      - PORT=4050
+      - MONGO_HOST=count_database
+      - MONGO_PORT=27017
+      - MONGO_USER=root
+      - MONGO_PASS=counttogetherpasswordroot
+      - VIRTUAL_HOST=count-together-backend.kyr.pw
+      - LETSENCRYPT_HOST=count-together-backend.kyr.pw
+      - LETSENCRYPT_EMAIL=example@example.com
+    depends_on:
+      - count_database
+  count_database:
+    image: mongo:4.2.5
+    container_name: count_together_mongo
+    restart: always
+    networks:
+      - internalcount
+    environment:
+      - MONGO_INITDB_DATABASE=count
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=counttogetherpasswordroot
+    volumes:
+      - /home/bebert/count_together_mongo_db:/data/db
+networks:
+  proxy:
+    external:
+      name: nginx-proxy
+  internalcount:
