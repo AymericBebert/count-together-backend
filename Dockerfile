@@ -1,4 +1,4 @@
-FROM node:12.16.1-buster-slim
+FROM node:12.16.1-buster-slim AS builder
 
 WORKDIR /app
 
@@ -16,6 +16,8 @@ ARG VERSION=untagged
 ARG BUILD_CONFIGURATION=production
 RUN echo "export const version = '$VERSION';\nexport const configuration = '$BUILD_CONFIGURATION';\n" > ./src/version.ts
 
-RUN npm run build
+RUN npm run build-ts
+
+EXPOSE 4050
 
 CMD ["npm", "run", "serve"]

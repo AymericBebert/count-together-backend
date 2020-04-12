@@ -1,7 +1,7 @@
 version: "3"
 services:
   count_backend:
-    image: aymericbernard/count-together-backend:0.3.1
+    image: aymericbernard/count-together-backend:0.3.2
     ports:
       - "4050:4050"
     container_name: count_together_backend
