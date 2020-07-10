@@ -1,4 +1,4 @@
-FROM node:12.16.1-buster-slim AS builder
+FROM node:14.5.0-stretch-slim
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY tsconfig.json .
 COPY tslint.json .
 COPY jest.config.js .
 
-RUN npm install typescript@3.8.3
+RUN npm install typescript@3.9.6
 RUN npm install --production
 
 COPY . .
