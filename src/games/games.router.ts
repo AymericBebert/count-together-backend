@@ -1,16 +1,16 @@
-import {Request, Router} from 'express';
+import {Router} from 'express';
 import {GamesService} from './games.service';
 import {IGame, pickIGame} from '../model/game';
 import {generateToken} from '../utils/generate-token';
 
-interface Body<T> extends Request {
-    body: T;
+interface WithError<T> {
+    result: T | null;
+    error: string;
 }
 
 const router = Router();
 
-// addGame(game: IGame): Promise<IGame> {
-router.post('/new-game', (request: Body<IGame>, response) => {
+router.post<void, WithError<IGame>, IGame>('/new-game', (request, response) => {
     const gameId = generateToken(8);
     GamesService.addGame({...request.body, gameId})
         .then(game => response.send({result: game, error: ''}))
@@ -20,8 +20,7 @@ router.post('/new-game', (request: Body<IGame>, response) => {
         });
 });
 
-// getGameById(gameId: string): Promise<IGame | null> {
-router.get('/game/:gameId', (request, response) => {
+router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, response) => {
     const gameId = request.params.gameId;
     GamesService.getGameById(gameId)
         .then(game => response.send({result: game, error: ''}))
@@ -31,8 +30,7 @@ router.get('/game/:gameId', (request, response) => {
         });
 });
 
-// getGames(): Promise<IGame[]> {
-router.get('/games', (request, response) => {
+router.get<void, WithError<IGame[]>>('/games', (request, response) => {
     GamesService.getGames()
         .then(games => response.send({result: games, error: ''}))
         .catch(err => {
@@ -41,8 +39,7 @@ router.get('/games', (request, response) => {
         });
 });
 
-// updateGame(game: IGame): Promise<IGame> {
-router.put('/game/:gameId', (request: Body<IGame>, response) => {
+router.put<{ gameId: string }, WithError<IGame>, IGame>('/game/:gameId', (request, response) => {
     const gameId = request.params.gameId;
     if (gameId !== request.body.gameId) {
         response.status(400).send({result: null, error: 'Game ID mismatch'});
@@ -56,15 +53,14 @@ router.put('/game/:gameId', (request: Body<IGame>, response) => {
         });
 });
 
-// deleteGame(gameId: string): Promise<void> {
-router.delete('/game/:gameId', (request, response) => {
+router.delete<{ gameId: string }, WithError<null>>('/game/:gameId', (request, response) => {
     const gameId = request.params.gameId;
 
     GamesService.deleteGame(gameId)
-        .then(() => response.send({error: ''}))
+        .then(() => response.send({result: null, error: ''}))
         .catch(err => {
             console.warn(`Error in DELETE /games/game/${gameId}`);
-            response.status(500).send({error: err.toString()});
+            response.status(500).send({result: null, error: err.toString()});
         });
 });
 

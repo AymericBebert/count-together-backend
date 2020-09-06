@@ -10,7 +10,7 @@ const playerSchema = new mongoose.Schema({
 });
 
 const gameSchema = new mongoose.Schema({
-    gameId: { type: String, required: true, unique: true, index: true },
+    gameId: {type: String, required: true, unique: true, index: true},
     name: String,
     lowerScoreWins: Boolean,
     players: [playerSchema],

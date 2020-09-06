@@ -4,10 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY tsconfig.json .
-COPY tslint.json .
 COPY jest.config.js .
 
-RUN npm install typescript@3.9.6
+RUN npm install typescript@4.0.2
 RUN npm install --production
 
 COPY . .

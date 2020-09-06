@@ -78,14 +78,14 @@ const onConnection = (socket: socketIO.Socket): void => {
             .pipe(takeUntil(exited$))
             .subscribe(() => {
                 exited$.next();
-                hotel.removeConnection(socket, gameId);
+                hotel.removeConnection(socket, gameId).catch(err => console.error('removeConnection error:', err));
             });
 
         fromEventTyped(socket, 'game exit')
             .pipe(takeUntil(exited$))
             .subscribe(() => {
                 exited$.next();
-                hotel.removeConnection(socket, gameId);
+                hotel.removeConnection(socket, gameId).catch(err => console.error('removeConnection error:', err));
             });
 
         return;
