@@ -39,6 +39,13 @@ export class GameHotel {
         return removed
     }
 
+    public sendGame(socket: socketIO.Socket, gameId: string): boolean {
+        if (!this.rooms[gameId]) {
+            return false;
+        }
+        return socket.emit('game', this.rooms[gameId]);
+    }
+
     public updateGame(game: IGame): void {
         if (!this.rooms[game.gameId]) {
             return;

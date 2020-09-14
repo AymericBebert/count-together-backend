@@ -5,7 +5,7 @@ import {Server} from 'http';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import socketIO from 'socket.io';
-import {fromEventTyped} from './events';
+import {emitEvent, fromEventTyped} from './events';
 import gamesRouter from './games/games.router';
 import {loggerMiddleware} from './middlewares/logger';
 import {connectMongooseWithRetry} from './utils/mongodb-connect';
@@ -68,11 +68,83 @@ const onConnection = (socket: socketIO.Socket): void => {
 
         fromEventTyped(socket, 'game update')
             .pipe(takeUntil(exited$))
-            .subscribe(game => GamesService.updateGame(game).then(newGame => hotel.updateGame(newGame)));
+            .subscribe(game => GamesService.updateGame(game)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, game.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
 
         fromEventTyped(socket, 'game delete')
             .pipe(filter(gid => gid === gameId), takeUntil(exited$))
-            .subscribe(gid => GamesService.deleteGame(gid).then(() => hotel.deleteGame(gid)));
+            .subscribe(gid => GamesService.deleteGame(gid)
+                .then(() => hotel.deleteGame(gid))
+                .catch(err => {
+                    hotel.sendGame(socket, gid);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game edit name')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGameName(edit.gameId, edit.name)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game edit win')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGameWin(edit.gameId, edit.lowerScoreWins)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game edit player')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game remove player')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.removeGamePlayer(edit.gameId, edit.playerId)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game edit score')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGameScore(edit.gameId, edit.playerId, edit.scoreId, edit.score)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
+        fromEventTyped(socket, 'game remove score')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.removeGameScore(edit.gameId, edit.playerId, edit.scoreId)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
 
         fromEventTyped(socket, 'disconnect')
             .pipe(takeUntil(exited$))

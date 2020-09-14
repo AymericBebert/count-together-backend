@@ -1,7 +1,15 @@
 import {fromEvent, Observable} from 'rxjs';
 import {FromEventTarget} from 'rxjs/internal/observable/fromEvent';
 import {tap} from 'rxjs/operators';
-import {IGame} from './model/game';
+import {
+    IGame,
+    IGameEditName,
+    IGameEditPlayer,
+    IGameEditScore,
+    IGameEditWin,
+    IGameRemovePlayer,
+    IGameRemoveScore
+} from './model/game';
 
 export interface ReceivedEventTypes {
     'disconnect': void;
@@ -9,6 +17,12 @@ export interface ReceivedEventTypes {
     'game exit': void;
     'game update': IGame;
     'game delete': string;
+    'game edit name': IGameEditName;
+    'game edit win': IGameEditWin;
+    'game edit player': IGameEditPlayer;
+    'game remove player': IGameRemovePlayer;
+    'game edit score': IGameEditScore;
+    'game remove score': IGameRemoveScore;
 }
 
 export interface EmittedEventTypes {
@@ -16,6 +30,7 @@ export interface EmittedEventTypes {
     'game exited': string;
     'game': IGame;
     'game deleted': string;
+    'display error': string;
 }
 
 export function fromEventTyped<T extends keyof ReceivedEventTypes>(

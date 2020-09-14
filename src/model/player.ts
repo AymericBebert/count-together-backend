@@ -5,5 +5,5 @@ export interface IPlayer {
 
 export const pickIPlayer = (player: IPlayer): IPlayer => ({
     name: player.name,
-    scores: player.scores,
+    scores: [...player.scores],
 });
