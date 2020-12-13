@@ -28,27 +28,30 @@ export class GameRoom {
         return this.gameId;
     }
 
-    public addConnection(socket: socketIO.Socket): Promise<boolean> {
-        return new Promise(resolve => {
-            socket.join(this.room, (err: any) => {
-                console.log(`Room ${this.room}: client joined (${this.connectionCount} connected) ${socket.id}`);
-                resolve(!err);
-            });
-        });
+    public addConnection(socket: socketIO.Socket): boolean {
+        try {
+            socket.join(this.room);
+            console.log(`Room ${this.room}: client joined (${this.connectionCount} connected) ${socket.id}`);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+        return true;
     }
 
-    public removeConnection(socket: socketIO.Socket): Promise<boolean> {
-        return new Promise(resolve => {
-            socket.leave(this.room, (err: any) => {
-                console.log(`Room ${this.room}: client left (${this.connectionCount} connected) ${socket.id}`);
-                resolve(!err);
-            });
-        });
+    public removeConnection(socket: socketIO.Socket): boolean {
+        try {
+            socket.leave(this.room);
+            console.log(`Room ${this.room}: client left (${this.connectionCount} connected) ${socket.id}`);
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+        return true;
     }
 
     public get connectionCount(): number {
-        return Object.values(this.io.in(this.room).sockets)
-            .filter(s => !!s.rooms[this.room]).length;
+        return Array.from(this.io.in(this.room).sockets.sockets.values()).filter(s => s.connected).length;
     }
 
     public destroy(): void {

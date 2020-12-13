@@ -1,10 +1,10 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import {Server} from 'http';
+import {Server as HttpServer, createServer} from "http";
+import {Server, Socket} from "socket.io";
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
-import socketIO from 'socket.io';
 import {emitEvent, fromEventTyped} from './events';
 import gamesRouter from './games/games.router';
 import {loggerMiddleware} from './middlewares/logger';
@@ -21,27 +21,30 @@ connectMongooseWithRetry().catch(err => console.error('Could not connect to Data
 
 // Creating web server
 const app = express();
-const http = new Server(app);
+const http: HttpServer = createServer(app);
+// const http = new Server(app);
 
 // HTTP middleware and CORS
 app.use(loggerMiddleware);
 
 const corsAllowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '';
-if (corsAllowedOrigin) {
-    app.use(cors({origin: `${corsAllowedOrigin}`, optionsSuccessStatus: 200, credentials: true}));
-} else {
-    app.use(cors());
-}
-
+app.use(
+    (req, res, next) => next(),
+    corsAllowedOrigin
+        ? cors({origin: corsAllowedOrigin.split(','), optionsSuccessStatus: 200})
+        : cors(),
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-// Socket.IO server and CORS config
-const io = socketIO(http);
+// Socket.IO server with CORS config
 const sioAllowedOrigin = process.env.SIO_ALLOWED_ORIGIN || '';
-if (sioAllowedOrigin) {
-    io.origins([sioAllowedOrigin]);
-}
+const io = new Server(
+    http,
+    sioAllowedOrigin
+        ? {cors: {origin: sioAllowedOrigin.split(',')}}
+        : {cors: {origin: true}}
+);
 
 // HTTP healthCheck route
 app.get('/healthCheck', (request, response) => {
@@ -55,7 +58,7 @@ app.use('/games', gamesRouter);
 const hotel = new GameHotel(io);
 
 // Socket.IO new connection
-const onConnection = (socket: socketIO.Socket): void => {
+const onConnection = (socket: Socket): void => {
     console.log(`New connection from ${socket.id}`);
     const exited$ = new Subject<void>();
 
@@ -164,6 +167,6 @@ const onConnection = (socket: socketIO.Socket): void => {
     });
 };
 
-io.on('connection', socket => onConnection(socket));
+io.on('connection', (socket: Socket) => onConnection(socket));
 
 http.listen(port, () => console.log(`Listening on port ${port}!`));

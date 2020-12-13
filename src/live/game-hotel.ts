@@ -19,7 +19,7 @@ export class GameHotel {
             }
             this.rooms[gameId] = new GameRoom(this.io, game);
         }
-        const connected = await this.rooms[gameId].addConnection(socket);
+        const connected = this.rooms[gameId].addConnection(socket);
         if (connected) {
             emitEvent(socket, 'game', this.rooms[gameId].game);
             return true;

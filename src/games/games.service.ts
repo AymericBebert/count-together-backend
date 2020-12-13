@@ -27,7 +27,7 @@ const Game = mongoose.model<IGameModel>('Game', gameSchema);
 export class GamesService {
 
     public static async addGame(game: IGame): Promise<IGame> {
-        return Game.create(game).then(g => pickIGame(g));
+        return new Game(game).save().then(g => pickIGame(g));
     }
 
     public static async getGameById(gameId: string): Promise<IGame | null> {
@@ -43,6 +43,7 @@ export class GamesService {
         if (!game) {
             throw new Error(`The game with id "${newGame.gameId}" does not exist`);
         }
+        // @ts-ignore
         game.overwrite(newGame);
         const res = await game.save();
         if (!res) {

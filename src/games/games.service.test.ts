@@ -23,7 +23,7 @@ describe('GamesService', () => {
         await cleanAll();
     });
 
-    describe('Company service tests', () => {
+    describe('Games service tests', () => {
 
         it('games CRUD', async () => {
             const game01 = {

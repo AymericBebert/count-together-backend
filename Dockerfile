@@ -1,4 +1,4 @@
-FROM node:14.5.0-stretch-slim
+FROM node:14.15.1-stretch-slim
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY package*.json ./
 COPY tsconfig.json .
 COPY jest.config.js .
 
-RUN npm install typescript@4.0.2
+RUN npm install typescript@4.1.3
 RUN npm install --production
 
 COPY . .
