@@ -31,7 +31,6 @@ export class GameRoom {
     public addConnection(socket: socketIO.Socket): boolean {
         try {
             socket.join(this.room);
-            console.log(`Room ${this.room}: client joined (${this.connectionCount} connected) ${socket.id}`);
         } catch (e) {
             console.error(e);
             return false;
@@ -42,7 +41,6 @@ export class GameRoom {
     public removeConnection(socket: socketIO.Socket): boolean {
         try {
             socket.leave(this.room);
-            console.log(`Room ${this.room}: client left (${this.connectionCount} connected) ${socket.id}`);
         } catch (e) {
             console.error(e);
             return false;
@@ -50,8 +48,8 @@ export class GameRoom {
         return true;
     }
 
-    public get connectionCount(): number {
-        return Array.from(this.io.in(this.room).sockets.sockets.values()).filter(s => s.connected).length;
+    public getConnectionCount(): Promise<number> {
+        return this.io.sockets.adapter.sockets(new Set([this.room])).then(s => s.size);
     }
 
     public destroy(): void {

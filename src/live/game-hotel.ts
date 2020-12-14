@@ -22,19 +22,23 @@ export class GameHotel {
         const connected = this.rooms[gameId].addConnection(socket);
         if (connected) {
             emitEvent(socket, 'game', this.rooms[gameId].game);
-            return true;
         }
-        return false;
+        const numConnected = await this.rooms[gameId].getConnectionCount();
+        console.log(`Room ${this.rooms[gameId].room}: client joined (${numConnected} connected) ${socket.id}`);
+        return connected;
     }
 
     public async removeConnection(socket: socketIO.Socket, gameId: string): Promise<boolean> {
         if (!this.rooms[gameId]) {
             return false;
         }
-        const removed = await this.rooms[gameId].removeConnection(socket);
-        if (this.rooms[gameId].connectionCount === 0) {
+        const removed = this.rooms[gameId].removeConnection(socket);
+        const numConnected = await this.rooms[gameId].getConnectionCount();
+        console.log(`Room ${this.rooms[gameId].room}: client left (${numConnected} connected) ${socket.id}`);
+        if (numConnected === 0) {
             this.rooms[gameId].destroy();
             delete this.rooms[gameId];
+            console.log(`Cleaned up room of game ${gameId}`);
         }
         return removed
     }
