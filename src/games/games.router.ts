@@ -2,6 +2,7 @@ import {Router} from 'express';
 import {GamesService} from './games.service';
 import {
     IGame,
+    IGameEditGameType,
     IGameEditName,
     IGameEditPlayer,
     IGameEditScore,
@@ -83,6 +84,16 @@ router.post<ParamsDictionary, WithError<IGame>, IGameEditName>('/game-edit/name'
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/name', err);
+            response.status(500).send({result: null, error: err.toString()});
+        });
+});
+
+router.post<ParamsDictionary, WithError<IGame>, IGameEditGameType>('/game-edit/type', (request, response) => {
+    const edit = request.body;
+    GamesService.updateGameType(edit.gameId, edit.gameType)
+        .then(game => response.send({result: game, error: ''}))
+        .catch(err => {
+            console.warn('Error in POST /games/game-edit/type', err);
             response.status(500).send({result: null, error: err.toString()});
         });
 });

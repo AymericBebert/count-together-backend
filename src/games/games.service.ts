@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {IGame, pickIGame} from '../model/game';
+import {GameType, IGame, pickIGame} from '../model/game';
 import {IPlayer} from '../model/player';
 
 const playerSchema = new mongoose.Schema({
@@ -14,6 +14,7 @@ interface IPlayerModel extends IPlayer, mongoose.Document {
 const gameSchema = new mongoose.Schema({
     gameId: {type: String, required: true, unique: true, index: true},
     name: String,
+    gameType: String,
     lowerScoreWins: Boolean,
     players: [playerSchema],
 });
@@ -64,6 +65,30 @@ export class GamesService {
         );
         if (!res) {
             throw new Error(`The game with id "${gameId}" does not exist`);
+        }
+        return pickIGame(res);
+    }
+
+    public static async updateGameType(gameId: string, gameType: GameType): Promise<IGame> {
+        const game = await Game.findOne({gameId: gameId});
+        if (!game) {
+            throw new Error(`The game with id "${gameId}" does not exist`);
+        }
+        game.gameType = gameType;
+        const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
+        for (const player of game.players) {
+            player.scores.forEach((s, i) => {
+                if (s !== 0 && s !== 1) {
+                    player.scores.set(i, s ? 1 : 0);
+                }
+            })
+            if (player.scores.length < maxScoreLength) {
+                player.scores.push(...new Array(maxScoreLength - player.scores.length).fill(0));
+            }
+        }
+        const res = await game.save();
+        if (!res) {
+            throw new Error(`Error updating game "${gameId}"`);
         }
         return pickIGame(res);
     }
@@ -124,16 +149,24 @@ export class GamesService {
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
-        const player = game.players[playerId];
-        if (!player) {
-            throw new Error(`The player with id "${playerId}" does not exist`);
-        }
-        if (scoreId > player.scores.length) {
-            throw new Error(`scoreId ${scoreId} is too large`);
-        } else if (scoreId === player.scores.length) {
-            player.scores.push(score);
+        if (playerId === -1) {
+            for (const player of game.players) {
+                if (player.scores.length < scoreId + 1) {
+                    player.scores.push(...new Array(scoreId + 1 - player.scores.length).fill(0));
+                }
+            }
         } else {
-            player.scores.set(scoreId, score);
+            const player = game.players[playerId];
+            if (!player) {
+                throw new Error(`The player with id "${playerId}" does not exist`);
+            }
+            if (scoreId > player.scores.length) {
+                throw new Error(`scoreId ${scoreId} is too large`);
+            } else if (scoreId === player.scores.length) {
+                player.scores.push(score);
+            } else {
+                player.scores.set(scoreId, score);
+            }
         }
         const res = await game.save();
         if (!res) {
@@ -147,18 +180,26 @@ export class GamesService {
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
-        const player = game.players[playerId];
-        if (!player) {
-            throw new Error(`The player with id "${playerId}" does not exist`);
-        }
-        if (player.scores.length === 0) {
-            return pickIGame(game);
-        } else if (scoreId > player.scores.length) {
-            throw new Error(`scoreId ${scoreId} is too large`);
-        } else if (scoreId === player.scores.length - 1) {
-            player.scores.pop();
+        if (playerId === -1) {
+            for (const player of game.players) {
+                if (scoreId === player.scores.length - 1) {
+                    player.scores.pop();
+                }
+            }
         } else {
-            player.scores.set(scoreId, null);
+            const player = game.players[playerId];
+            if (!player) {
+                throw new Error(`The player with id "${playerId}" does not exist`);
+            }
+            if (player.scores.length === 0) {
+                return pickIGame(game);
+            } else if (scoreId > player.scores.length) {
+                throw new Error(`scoreId ${scoreId} is too large`);
+            } else if (scoreId === player.scores.length - 1) {
+                player.scores.pop();
+            } else {
+                player.scores.set(scoreId, null);
+            }
         }
         const res = await game.save();
         if (!res) {

@@ -26,9 +26,10 @@ describe('GamesService', () => {
     describe('Games service tests', () => {
 
         it('games CRUD', async () => {
-            const game01 = {
+            const game01: IGame = {
                 gameId: 'test_game',
                 name: 'Test Game',
+                gameType: 'free',
                 lowerScoreWins: false,
                 players: [
                     {name: 'A', scores: [4]},
@@ -46,6 +47,7 @@ describe('GamesService', () => {
             await GamesService.updateGame({
                 gameId: 'test_game',
                 name: 'Test Game Updated',
+                gameType: 'free',
                 lowerScoreWins: true,
                 players: [
                     {name: 'A', scores: [1, 2, 3]},
@@ -74,6 +76,7 @@ describe('GamesService', () => {
             const game01: IGame = {
                 gameId: 'test_game',
                 name: 'Test Game',
+                gameType: 'free',
                 lowerScoreWins: false,
                 players: [],
             };
@@ -94,6 +97,7 @@ describe('GamesService', () => {
             const game01: IGame = {
                 gameId: 'test_game',
                 name: 'Test Game',
+                gameType: 'free',
                 lowerScoreWins: false,
                 players: [],
             };
@@ -109,6 +113,7 @@ describe('GamesService', () => {
             const game01: IGame = {
                 gameId: 'test_game',
                 name: 'Test Game',
+                gameType: 'free',
                 lowerScoreWins: false,
                 players: [],
             };
@@ -156,6 +161,29 @@ describe('GamesService', () => {
             await GamesService.removeGamePlayer(game01.gameId, 0);
             game01bis = await GamesService.getGameById(game01.gameId);
             expect(game01bis && game01bis.players.length).toEqual(0);
+        });
+
+        it('games edit type - winOrLose', async () => {
+            const game01: IGame = {
+                gameId: 'test_game',
+                name: 'Test Game',
+                gameType: 'free',
+                lowerScoreWins: false,
+                players: [],
+            };
+            await GamesService.addGame(game01);
+
+            await GamesService.updateGamePlayer(game01.gameId, 0, 'New player 0');
+            await GamesService.updateGamePlayer(game01.gameId, 1, 'New player 1');
+
+            await GamesService.updateGameScore(game01.gameId, 0, 0, 1);
+            await GamesService.updateGameScore(game01.gameId, 0, 1, 7);
+            await GamesService.updateGameScore(game01.gameId, 1, 0, 9);
+
+            const game01bis = await GamesService.updateGameType(game01.gameId, 'winOrLose');
+            expect(game01bis && game01bis.gameType).toEqual('winOrLose');
+            expect(game01bis && game01bis.players[0].scores).toEqual([1, 1]);
+            expect(game01bis && game01bis.players[1].scores).toEqual([1, 0]);
         });
     });
 });

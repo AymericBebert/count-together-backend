@@ -1,8 +1,11 @@
 import {IPlayer, pickIPlayer} from './player';
 
+export type GameType = 'free' | 'winOrLose';
+
 export interface IGame {
     gameId: string;
     name: string;
+    gameType: GameType;
     lowerScoreWins: boolean;
     players: IPlayer[];
 }
@@ -10,6 +13,7 @@ export interface IGame {
 export const pickIGame = (game: IGame): IGame => ({
     gameId: game.gameId,
     name: game.name,
+    gameType: game.gameType,
     lowerScoreWins: game.lowerScoreWins,
     players: [...game.players.map(p => pickIPlayer(p))],
 });
@@ -22,6 +26,11 @@ export interface IGameEditName {
 export interface IGameEditWin {
     gameId: string;
     lowerScoreWins: boolean;
+}
+
+export interface IGameEditGameType {
+    gameId: string;
+    gameType: GameType;
 }
 
 export interface IGameEditPlayer {

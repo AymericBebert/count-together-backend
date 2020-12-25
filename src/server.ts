@@ -109,6 +109,16 @@ const onConnection = (socket: Socket): void => {
                 })
             );
 
+        fromEventTyped(socket, 'game edit type')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGameType(edit.gameId, edit.gameType)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', err.toString());
+                })
+            );
+
         fromEventTyped(socket, 'game edit player')
             .pipe(takeUntil(exited$))
             .subscribe(edit => GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName)

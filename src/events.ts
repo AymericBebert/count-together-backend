@@ -3,6 +3,7 @@ import {FromEventTarget} from 'rxjs/internal/observable/fromEvent';
 import {tap} from 'rxjs/operators';
 import {
     IGame,
+    IGameEditGameType,
     IGameEditName,
     IGameEditPlayer,
     IGameEditScore,
@@ -19,6 +20,7 @@ export interface ReceivedEventTypes {
     'game delete': string;
     'game edit name': IGameEditName;
     'game edit win': IGameEditWin;
+    'game edit type': IGameEditGameType;
     'game edit player': IGameEditPlayer;
     'game remove player': IGameRemovePlayer;
     'game edit score': IGameEditScore;
