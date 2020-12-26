@@ -75,15 +75,21 @@ export class GamesService {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
         game.gameType = gameType;
-        const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
-        for (const player of game.players) {
-            player.scores.forEach((s, i) => {
-                if (s !== 0 && s !== 1) {
-                    player.scores.set(i, s ? 1 : 0);
+        if (gameType === 'smallScores' || gameType === 'winOrLose') {
+            const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
+            for (const player of game.players) {
+                if (player.scores.length < maxScoreLength) {
+                    player.scores.push(...new Array(maxScoreLength - player.scores.length).fill(0));
                 }
-            })
-            if (player.scores.length < maxScoreLength) {
-                player.scores.push(...new Array(maxScoreLength - player.scores.length).fill(0));
+            }
+        }
+        if (gameType === 'winOrLose') {
+            for (const player of game.players) {
+                player.scores.forEach((s, i) => {
+                    if (s !== 0 && s !== 1) {
+                        player.scores.set(i, s ? 1 : 0);
+                    }
+                })
             }
         }
         const res = await game.save();
@@ -114,6 +120,10 @@ export class GamesService {
             throw new Error(`playerId ${playerId} is too large`);
         } else if (playerId === game.players.length) {
             game.players.push({name: playerName, scores: []});
+            if (game.gameType === 'smallScores' || game.gameType === 'winOrLose') {
+                const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
+                game.players[game.players.length - 1].scores.push(...new Array(maxScoreLength).fill(0));
+            }
         } else {
             game.players[playerId].name = playerName;
         }

@@ -1,6 +1,6 @@
 import {IPlayer, pickIPlayer} from './player';
 
-export type GameType = 'free' | 'winOrLose';
+export type GameType = 'free' | 'smallScores' | 'winOrLose';
 
 export interface IGame {
     gameId: string;
