@@ -8,7 +8,7 @@
     "url": "https://github.com/AymericBebert/count-together-backend"
   },
   "scripts": {
-    "start": "npm run build-ts && npm run serve",
+    "start": "npm run build && npm run serve",
     "tsc": "tsc",
     "test": "jest --coverage --verbose",
     "build": "tsc",
