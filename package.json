@@ -11,8 +11,7 @@
     "start": "npm run build-ts && npm run serve",
     "tsc": "tsc",
     "test": "jest --coverage --verbose",
-    "build-ts": "tsc",
-    "build": "npm run build-ts && npm run lint",
+    "build": "tsc",
     "serve": "node dist/server.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"

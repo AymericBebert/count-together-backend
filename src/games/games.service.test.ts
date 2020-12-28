@@ -1,5 +1,5 @@
 import {GamesService} from './games.service';
-import {connectMongooseWithRetry} from '../tests/mongodb-memory-connect';
+import {connectMongooseWithRetry} from '../test/mongodb-memory-connect';
 import {IGame} from '../model/game';
 
 describe('GamesService', () => {

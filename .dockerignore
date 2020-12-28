@@ -1,4 +1,6 @@
 .git
+Dockerfile
+.dockerignore
 
 /dist
 /e2e
