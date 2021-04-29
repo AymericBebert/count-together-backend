@@ -30,7 +30,7 @@ export class GameRoom {
 
     public addConnection(socket: socketIO.Socket): boolean {
         try {
-            socket.join(this.room);
+            void socket.join(this.room);
         } catch (e) {
             console.error(e);
             return false;
@@ -40,7 +40,7 @@ export class GameRoom {
 
     public removeConnection(socket: socketIO.Socket): boolean {
         try {
-            socket.leave(this.room);
+            void socket.leave(this.room);
         } catch (e) {
             console.error(e);
             return false;

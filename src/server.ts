@@ -1,8 +1,8 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import {Server as HttpServer, createServer} from "http";
-import {Server, Socket} from "socket.io";
+import {Server as HttpServer, createServer} from 'http';
+import {Server, Socket} from 'socket.io';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {emitEvent, fromEventTyped} from './events';
