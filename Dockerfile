@@ -1,4 +1,4 @@
-FROM node:14.15.3-stretch-slim AS builder
+FROM node:16.0.0-stretch-slim AS builder
 
 RUN mkdir /count-together
 WORKDIR /count-together
@@ -18,7 +18,7 @@ RUN npm run build
 #
 # Go back from clean node image
 #
-FROM node:14.15.3-stretch-slim
+FROM node:16.0.0-stretch-slim
 
 RUN mkdir /count-together /count-together/node_modules /count-together/dist
 WORKDIR /count-together

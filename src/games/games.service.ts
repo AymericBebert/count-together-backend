@@ -44,7 +44,6 @@ export class GamesService {
         if (!game) {
             throw new Error(`The game with id "${newGame.gameId}" does not exist`);
         }
-        // @ts-ignore
         game.overwrite(newGame);
         const res = await game.save();
         if (!res) {
