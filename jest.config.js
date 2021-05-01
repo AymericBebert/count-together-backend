@@ -13,7 +13,7 @@ module.exports = {
     },
     testMatch: [
         '**/*.test.(ts)',
-        '**/test/*'
+        '**/src/test/*'
     ],
     testEnvironment: 'node'
 };

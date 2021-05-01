@@ -1,6 +1,6 @@
-import {GamesService} from './games.service';
-import {connectMongooseWithRetry} from '../test/mongodb-memory-connect';
 import {IGame} from '../model/game';
+import {connectMongooseWithRetry} from '../test-utils/mongodb-memory-connect';
+import {GamesService} from './games.service';
 
 describe('GamesService', () => {
 
@@ -137,15 +137,15 @@ describe('GamesService', () => {
             expect(game01bis && game01bis.players[0].scores).toEqual([5, 7]);
 
             await expect(
-                async () => await GamesService.updateGamePlayer(game01.gameId, 9, 'aaa')
+                async () => await GamesService.updateGamePlayer(game01.gameId, 9, 'aaa'),
             ).rejects.toThrow('playerId 9 is too large');
 
             await expect(
-                async () => await GamesService.updateGameScore(game01.gameId, 9, 0, 5)
+                async () => await GamesService.updateGameScore(game01.gameId, 9, 0, 5),
             ).rejects.toThrow('The player with id "9" does not exist');
 
             await expect(
-                async () => await GamesService.updateGameScore(game01.gameId, 0, 9, 5)
+                async () => await GamesService.updateGameScore(game01.gameId, 0, 9, 5),
             ).rejects.toThrow('scoreId 9 is too large');
 
             await GamesService.removeGameScore(game01.gameId, 0, 0);

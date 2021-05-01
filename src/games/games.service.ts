@@ -235,7 +235,7 @@ export class GamesService {
     }
 
     private static duplicateGameName(original: string): string {
-        const match = original.match(/(.*) (\d+)$/);
+        const match = /(.*) (\d+)$/.exec(original);
         if (match) {
             const version = parseInt(match[2], 10) + 1;
             return `${match[1]} ${version}`;

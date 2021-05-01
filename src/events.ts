@@ -9,7 +9,7 @@ import {
     IGameEditScore,
     IGameEditWin,
     IGameRemovePlayer,
-    IGameRemoveScore
+    IGameRemoveScore,
 } from './model/game';
 
 export interface ReceivedEventTypes {

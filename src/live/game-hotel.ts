@@ -1,8 +1,8 @@
 import socketIO from 'socket.io';
-import {GameRoom} from './game-room';
+import {emitEvent} from '../events';
 import {GamesService} from '../games/games.service';
 import {IGame} from '../model/game';
-import {emitEvent} from '../events';
+import {GameRoom} from './game-room';
 
 export class GameHotel {
     private rooms: { [gameId: string]: GameRoom } = {};
@@ -40,7 +40,7 @@ export class GameHotel {
             delete this.rooms[gameId];
             console.log(`Cleaned up room of game ${gameId}`);
         }
-        return removed
+        return removed;
     }
 
     public sendGame(socket: socketIO.Socket, gameId: string): boolean {

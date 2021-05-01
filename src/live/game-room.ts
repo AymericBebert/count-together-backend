@@ -1,5 +1,5 @@
-import socketIO from 'socket.io';
 import {Subject} from 'rxjs';
+import socketIO from 'socket.io';
 import {EmittedEventTypes} from '../events';
 import {IGame} from '../model/game';
 

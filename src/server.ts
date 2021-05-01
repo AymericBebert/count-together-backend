@@ -1,16 +1,16 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import {Server as HttpServer, createServer} from 'http';
-import {Server, Socket} from 'socket.io';
+import {createServer, Server as HttpServer} from 'http';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
+import {Server, Socket} from 'socket.io';
 import {emitEvent, fromEventTyped} from './events';
 import gamesRouter from './games/games.router';
+import {GamesService} from './games/games.service';
+import {GameHotel} from './live/game-hotel';
 import {loggerMiddleware} from './middlewares/logger';
 import {connectMongooseWithRetry} from './utils/mongodb-connect';
-import {GameHotel} from './live/game-hotel';
-import {GamesService} from './games/games.service';
 import {configuration, version} from './version';
 
 // Get config from env
@@ -42,7 +42,7 @@ const io = new Server(
     http,
     sioAllowedOrigin
         ? {cors: {origin: sioAllowedOrigin.split(',')}}
-        : {cors: {origin: true}}
+        : {cors: {origin: true}},
 );
 
 // HTTP healthCheck route
@@ -65,7 +65,7 @@ const onConnection = (socket: Socket): void => {
 
         const added = await hotel.addConnection(socket, gameId);
         if (!added) {
-            return
+            return;
         }
 
         fromEventTyped(socket, 'game update')
@@ -75,7 +75,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, game.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game delete')
@@ -85,7 +85,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, gid);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game edit name')
@@ -95,7 +95,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game edit win')
@@ -105,7 +105,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game edit type')
@@ -115,7 +115,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game edit player')
@@ -125,7 +125,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game remove player')
@@ -135,7 +135,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game edit score')
@@ -145,7 +145,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'game remove score')
@@ -155,7 +155,7 @@ const onConnection = (socket: Socket): void => {
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
                     emitEvent(socket, 'display error', err.toString());
-                })
+                }),
             );
 
         fromEventTyped(socket, 'disconnect')

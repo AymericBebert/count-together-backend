@@ -25,7 +25,7 @@ export async function connectMongooseWithRetry(maxTries = -1): Promise<boolean> 
         }).catch(err => console.error(`Mongoose connection error with ${MONGODB_CONNECTION}: ${err}`));
 
         if (connection) {
-            console.log(`Mongoose connected with URL ${MONGODB_CONNECTION}`)
+            console.log(`Mongoose connected with URL ${MONGODB_CONNECTION}`);
             return true;
         } else {
             await new Promise(resolve => setTimeout(resolve, 10000));
