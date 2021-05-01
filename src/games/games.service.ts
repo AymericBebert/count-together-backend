@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import {GameType, IGame, pickIGame} from '../model/game';
 import {IPlayer} from '../model/player';
+import {generateToken} from '../utils/generate-token';
 
 const playerSchema = new mongoose.Schema({
     name: String,
@@ -56,6 +57,22 @@ export class GamesService {
         return Game.deleteOne({gameId}).then(() => void 0);
     }
 
+    public static async duplicateGame(gameId: string): Promise<IGame | null> {
+        const game = await GamesService.getGameById(gameId);
+        if (!game) {
+            throw new Error('Cannot duplicate: did not find game');
+        }
+        return GamesService.addGame({
+            ...game,
+            players: game.players.map(player => ({
+                ...player,
+                scores: [],
+            })),
+            gameId: generateToken(8),
+            name: GamesService.duplicateGameName(game.name),
+        });
+    }
+
     public static async updateGameName(gameId: string, name: string): Promise<IGame> {
         const res = await Game.findOneAndUpdate(
             {gameId: gameId},
@@ -88,7 +105,7 @@ export class GamesService {
                     if (s !== 0 && s !== 1) {
                         player.scores.set(i, s ? 1 : 0);
                     }
-                })
+                });
             }
         }
         const res = await game.save();
@@ -215,5 +232,14 @@ export class GamesService {
             throw new Error(`Error updating game "${gameId}"`);
         }
         return pickIGame(res);
+    }
+
+    private static duplicateGameName(original: string): string {
+        const match = original.match(/(.*) (\d+)$/);
+        if (match) {
+            const version = parseInt(match[2], 10) + 1;
+            return `${match[1]} ${version}`;
+        }
+        return `${original} - 2`;
     }
 }

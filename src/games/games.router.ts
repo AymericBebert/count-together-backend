@@ -1,5 +1,4 @@
 import {Router} from 'express';
-import {GamesService} from './games.service';
 import {
     IGame,
     IGameEditGameType,
@@ -9,9 +8,10 @@ import {
     IGameEditWin,
     IGameRemovePlayer,
     IGameRemoveScore,
-    pickIGame
+    pickIGame,
 } from '../model/game';
 import {generateToken} from '../utils/generate-token';
+import {GamesService} from './games.service';
 
 interface WithError<T> {
     result: T | null;
@@ -32,14 +32,7 @@ router.post<{}, WithError<IGame>, IGame>('/new-game', (request, response) => {
 
 router.post<{ gameId: string }, WithError<IGame>>('/duplicate/:gameId', (request, response) => {
     const gameId = request.params.gameId;
-    const newGameId = generateToken(8);
-    GamesService.getGameById(gameId)
-        .then(game => {
-            if (!game) {
-                throw new Error('Cannot copy: did not find game');
-            }
-            return GamesService.addGame({...game, gameId: newGameId, name: game.name + ' - copy'});
-        })
+    GamesService.duplicateGame(gameId)
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn(`Error in POST /duplicate/${gameId}`, err);

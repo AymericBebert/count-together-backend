@@ -22,7 +22,6 @@ connectMongooseWithRetry().catch(err => console.error('Could not connect to Data
 // Creating web server
 const app = express();
 const http: HttpServer = createServer(app);
-// const http = new Server(app);
 
 // HTTP middleware and CORS
 app.use(loggerMiddleware);
