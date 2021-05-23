@@ -13,6 +13,8 @@ import {
 import {generateToken} from '../utils/generate-token';
 import {GamesService} from './games.service';
 
+type NoParams = Record<string, never>
+
 interface WithError<T> {
     result: T | null;
     error: string;
@@ -20,7 +22,7 @@ interface WithError<T> {
 
 const router = Router();
 
-router.post<{}, WithError<IGame>, IGame>('/new-game', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGame>('/new-game', (request, response) => {
     const gameId = generateToken(8);
     GamesService.addGame({...request.body, gameId})
         .then(game => response.send({result: game, error: ''}))
@@ -50,7 +52,7 @@ router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, resp
         });
 });
 
-// router.get<{}, WithError<IGame[]>>('/games', (request, response) => {
+// router.get<NoParams, WithError<IGame[]>>('/games', (request, response) => {
 //     GamesService.getGames()
 //         .then(games => response.send({result: games, error: ''}))
 //         .catch(err => {
@@ -84,7 +86,7 @@ router.delete<{ gameId: string }, WithError<null>>('/game/:gameId', (request, re
         });
 });
 
-router.post<{}, WithError<IGame>, IGameEditName>('/game-edit/name', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGameEditName>('/game-edit/name', (request, response) => {
     const edit = request.body;
     GamesService.updateGameName(edit.gameId, edit.name)
         .then(game => response.send({result: game, error: ''}))
@@ -94,7 +96,7 @@ router.post<{}, WithError<IGame>, IGameEditName>('/game-edit/name', (request, re
         });
 });
 
-router.post<{}, WithError<IGame>, IGameEditGameType>('/game-edit/type', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGameEditGameType>('/game-edit/type', (request, response) => {
     const edit = request.body;
     GamesService.updateGameType(edit.gameId, edit.gameType)
         .then(game => response.send({result: game, error: ''}))
@@ -104,7 +106,7 @@ router.post<{}, WithError<IGame>, IGameEditGameType>('/game-edit/type', (request
         });
 });
 
-router.post<{}, WithError<IGame>, IGameEditWin>('/game-edit/win', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGameEditWin>('/game-edit/win', (request, response) => {
     const edit = request.body;
     GamesService.updateGameWin(edit.gameId, edit.lowerScoreWins)
         .then(game => response.send({result: game, error: ''}))
@@ -114,7 +116,7 @@ router.post<{}, WithError<IGame>, IGameEditWin>('/game-edit/win', (request, resp
         });
 });
 
-router.post<{}, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (request, response) => {
     const edit = request.body;
     GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName)
         .then(game => response.send({result: game, error: ''}))
@@ -124,7 +126,7 @@ router.post<{}, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (request
         });
 });
 
-router.delete<{}, WithError<IGame>, IGameRemovePlayer>('/game-edit/player', (request, response) => {
+router.delete<NoParams, WithError<IGame>, IGameRemovePlayer>('/game-edit/player', (request, response) => {
     const edit = request.body;
     GamesService.removeGamePlayer(edit.gameId, edit.playerId)
         .then(game => response.send({result: game, error: ''}))
@@ -134,7 +136,7 @@ router.delete<{}, WithError<IGame>, IGameRemovePlayer>('/game-edit/player', (req
         });
 });
 
-router.post<{}, WithError<IGame>, IGameEditScore>('/game-edit/score', (request, response) => {
+router.post<NoParams, WithError<IGame>, IGameEditScore>('/game-edit/score', (request, response) => {
     const edit = request.body;
     GamesService.updateGameScore(edit.gameId, edit.playerId, edit.scoreId, edit.score)
         .then(game => response.send({result: game, error: ''}))
@@ -144,7 +146,7 @@ router.post<{}, WithError<IGame>, IGameEditScore>('/game-edit/score', (request, 
         });
 });
 
-router.delete<{}, WithError<IGame>, IGameRemoveScore>('/game-edit/score', (request, response) => {
+router.delete<NoParams, WithError<IGame>, IGameRemoveScore>('/game-edit/score', (request, response) => {
     const edit = request.body;
     GamesService.removeGameScore(edit.gameId, edit.playerId, edit.scoreId)
         .then(game => response.send({result: game, error: ''}))

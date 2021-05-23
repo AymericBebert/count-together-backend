@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, {Connection} from 'mongoose';
 
 // Get config from env
 const mongoHost = process.env.MONGO_HOST || 'localhost';

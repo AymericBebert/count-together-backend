@@ -5,7 +5,7 @@ import {createServer, Server as HttpServer} from 'http';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Server, Socket} from 'socket.io';
-import {emitEvent, fromEventTyped} from './events';
+import {emitEvent, EmittedEventTypes, fromEventTyped, ReceivedEventTypes} from './events';
 import gamesRouter from './games/games.router';
 import {GamesService} from './games/games.service';
 import {GameHotel} from './live/game-hotel';
@@ -57,7 +57,7 @@ app.use('/games', gamesRouter);
 const hotel = new GameHotel(io);
 
 // Socket.IO new connection
-const onConnection = (socket: Socket): void => {
+const onConnection = (socket: Socket<ReceivedEventTypes, EmittedEventTypes>): void => {
     console.log(`New connection from ${socket.id}`);
     const exited$ = new Subject<void>();
 
