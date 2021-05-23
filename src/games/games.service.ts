@@ -57,6 +57,10 @@ export class GamesService {
         return Game.deleteOne({gameId}).then(() => void 0);
     }
 
+    public static async deleteAllGames(): Promise<void> {
+        return Game.deleteMany({}).then(() => void 0);
+    }
+
     public static async duplicateGame(gameId: string): Promise<IGame | null> {
         const game = await GamesService.getGameById(gameId);
         if (!game) {

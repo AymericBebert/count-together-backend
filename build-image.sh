@@ -34,6 +34,13 @@ else
   fi
 fi
 
+function delete_new_tag() {
+  if [ -z $tags ]; then
+    echo "Removing new git tag $newtag"
+    git tag -d $newtag >/dev/null
+  fi
+}
+
 version=$newtag
 if [ "$BUILD_CONFIGURATION" != "production" ]; then
   version=$newtag-$BUILD_CONFIGURATION
@@ -42,6 +49,7 @@ fi
 read -p "Will build version $version, configuration $BUILD_CONFIGURATION, continue? [y/N]: " c
 if [[ ! $c =~ ^[Yy]$ ]]; then
   echo "Cancelled"
+    delete_new_tag
   exit 2
 fi
 

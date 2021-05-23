@@ -1,18 +1,17 @@
+import {Connection} from 'mongoose';
 import {IGame} from '../model/game';
-import {connectMongooseWithRetry} from '../test-utils/mongodb-memory-connect';
+import {connectTestMongoose} from '../utils/mongodb-test-connect';
 import {GamesService} from './games.service';
 
 describe('GamesService', () => {
+    let connection: Connection;
 
     async function cleanAll(): Promise<void> {
-        const allGames = await GamesService.getGames().catch(() => void 0) || [];
-        for (const g of allGames.filter(g => g.gameId.startsWith('test_'))) {
-            await GamesService.deleteGame(g.gameId);
-        }
+        await GamesService.deleteAllGames();
     }
 
     beforeAll(async () => {
-        await connectMongooseWithRetry();
+        connection = await connectTestMongoose('games');
     });
 
     beforeEach(async () => {
@@ -20,7 +19,8 @@ describe('GamesService', () => {
     });
 
     afterAll(async () => {
-        await cleanAll();
+        await connection.dropDatabase();
+        await connection.close();
     });
 
     describe('Games service tests', () => {
