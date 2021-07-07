@@ -5,13 +5,13 @@ import {createServer, Server as HttpServer} from 'http';
 import {Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Server, Socket} from 'socket.io';
+import {config} from './config';
 import {emitEvent, EmittedEventTypes, fromEventTyped, ReceivedEventTypes} from './events';
 import gamesRouter from './games/games.router';
 import {GamesService} from './games/games.service';
 import {GameHotel} from './live/game-hotel';
 import {loggerMiddleware} from './middlewares/logger';
 import {connectMongooseWithRetry} from './utils/mongodb-connect';
-import {configuration, version} from './version';
 
 // Get config from env
 const port = process.env.PORT || 4050;
@@ -47,7 +47,7 @@ const io = new Server(
 
 // HTTP healthCheck route
 app.get('/healthCheck', (request, response) => {
-    response.send({hostname: request.hostname, status: 'ok', version, configuration});
+    response.send({hostname: request.hostname, status: 'ok', version: config.version});
 });
 
 // routes
