@@ -28,4 +28,5 @@ RUN echo $VERSION > /version.txt
 
 EXPOSE 4050
 
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["npm", "run", "serve"]
