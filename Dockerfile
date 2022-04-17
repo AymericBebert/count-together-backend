@@ -1,4 +1,4 @@
-FROM node:16.2.0-buster-slim AS builder
+FROM node:16.14.2-buster-slim AS builder
 
 RUN mkdir /count-together
 WORKDIR /count-together
@@ -14,7 +14,7 @@ RUN npm run build
 #
 # Go back from clean node image
 #
-FROM node:16.2.0-buster-slim
+FROM node:16.14.2-buster-slim
 
 RUN mkdir /count-together /count-together/node_modules /count-together/dist
 WORKDIR /count-together
@@ -23,10 +23,9 @@ COPY --from=builder ["/count-together/package.json", "/count-together/package-lo
 COPY --from=builder /count-together/node_modules ./node_modules/
 COPY --from=builder /count-together/dist ./dist/
 
-ARG VERSION=untagged
-RUN echo $VERSION > /version.txt
+ARG APP_VERSION=untagged
+RUN echo "APP_VERSION=$APP_VERSION" >/count-together/dist/.env
 
 EXPOSE 4050
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["npm", "run", "serve"]

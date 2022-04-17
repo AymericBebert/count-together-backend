@@ -46,7 +46,7 @@ fi
 
 echo "-----"
 echo "Building count-together-backend:$version..."
-docker build -t "aymericbernard/count-together-backend:$version" --build-arg VERSION="$version" . ||
+docker build -t "aymericbernard/count-together-backend:$version" --build-arg APP_VERSION="$version" . ||
   {
     echo 'Build failed'
     delete_new_tag

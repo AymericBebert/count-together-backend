@@ -1,6 +1,6 @@
 import {Connection} from 'mongoose';
 import {IGame} from '../model/game';
-import {connectTestMongoose} from '../utils/mongodb-test-connect';
+import {closeTestMongoose, connectTestMongoose} from '../utils/mongodb-test-connect';
 import {GamesService} from './games.service';
 
 describe('GamesService', () => {
@@ -19,8 +19,7 @@ describe('GamesService', () => {
     });
 
     afterAll(async () => {
-        await connection.dropDatabase();
-        await connection.close();
+        await closeTestMongoose(connection);
     });
 
     describe('Games service tests', () => {
