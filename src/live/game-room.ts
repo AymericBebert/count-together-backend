@@ -1,5 +1,6 @@
 import {Subject} from 'rxjs';
 import socketIO from 'socket.io';
+import {config} from '../config';
 import {EmittedEventTypes} from '../events';
 import {IGame} from '../model/game';
 
@@ -58,7 +59,7 @@ export class GameRoom {
     }
 
     public emit<T extends keyof EmittedEventTypes>(eventName: T, ...args: Array<EmittedEventTypes[T]>): void {
-        if (process.env.DEBUG_SOCKET) {
+        if (config.debugSocket) {
             console.log(`socket< [${this.room}] ${eventName}: ${JSON.stringify(args[0])?.substr(0, 999)}`);
         } else {
             console.log(`Emitting event to clients of ${this.room}: ${eventName}`);

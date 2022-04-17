@@ -1,181 +1,60 @@
-import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import {createServer, Server as HttpServer} from 'http';
-import {Subject} from 'rxjs';
-import {filter, takeUntil} from 'rxjs/operators';
 import {Server, Socket} from 'socket.io';
 import {config} from './config';
-import {emitEvent, EmittedEventTypes, fromEventTyped, ReceivedEventTypes} from './events';
 import gamesRouter from './games/games.router';
-import {GamesService} from './games/games.service';
 import {GameHotel} from './live/game-hotel';
+import {handle404} from './middlewares/404-handler';
 import {loggerMiddleware} from './middlewares/logger';
+import {onConnection} from './socket/on-connection';
 import {connectMongooseWithRetry} from './utils/mongodb-connect';
-
-// Get config from env
-const port = process.env.PORT || 4050;
 
 // Connecting to mongoDB
 connectMongooseWithRetry().catch(err => console.error('Could not connect to Database', err));
 
 // Creating web server
 const app = express();
-const http: HttpServer = createServer(app);
 
-// HTTP middleware and CORS
-app.use(loggerMiddleware);
+// CORS config
+if (config.corsAllowedOrigin) {
+    app.use(cors({origin: config.corsAllowedOrigin, optionsSuccessStatus: 200, credentials: true}));
+} else {
+    app.use(cors());
+}
 
-const corsAllowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '';
-app.use(
-    (req, res, next) => next(),
-    corsAllowedOrigin
-        ? cors({origin: corsAllowedOrigin.split(','), optionsSuccessStatus: 200})
-        : cors(),
-);
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
-// Socket.IO server with CORS config
-const sioAllowedOrigin = process.env.SIO_ALLOWED_ORIGIN || '';
-const io = new Server(
-    http,
-    sioAllowedOrigin
-        ? {cors: {origin: sioAllowedOrigin.split(',')}}
-        : {cors: {origin: true}},
-);
+// Body and URL parsing middlewares
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 // HTTP healthCheck route
 app.get('/healthCheck', (request, response) => {
     response.send({hostname: request.hostname, status: 'ok', version: config.version});
 });
 
-// routes
+// Logger middleware
+app.use(loggerMiddleware);
+
+// Routes
 app.use('/games', gamesRouter);
+
+// 404 handler
+app.use(handle404);
+
+// HTTP server
+const http: HttpServer = createServer(app);
+http.listen(config.port, () => console.log(`Count Together backend ${config.version} listening on port ${config.port}`));
+
+// Socket.IO server with CORS config
+const io = new Server(
+    http,
+    config.sioAllowedOrigin
+        ? {cors: {origin: config.sioAllowedOrigin.split(',')}}
+        : {cors: {origin: true}},
+);
 
 // hotel
 const hotel = new GameHotel(io);
 
 // Socket.IO new connection
-const onConnection = (socket: Socket<ReceivedEventTypes, EmittedEventTypes>): void => {
-    console.log(`New connection from ${socket.id}`);
-    const exited$ = new Subject<void>();
-
-    fromEventTyped(socket, 'game join').subscribe(async gameId => {
-
-        const added = await hotel.addConnection(socket, gameId);
-        if (!added) {
-            return;
-        }
-
-        fromEventTyped(socket, 'game update')
-            .pipe(takeUntil(exited$))
-            .subscribe(game => GamesService.updateGame(game)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, game.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game delete')
-            .pipe(filter(gid => gid === gameId), takeUntil(exited$))
-            .subscribe(gid => GamesService.deleteGame(gid)
-                .then(() => hotel.deleteGame(gid))
-                .catch(err => {
-                    hotel.sendGame(socket, gid);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game edit name')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.updateGameName(edit.gameId, edit.name)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game edit win')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.updateGameWin(edit.gameId, edit.lowerScoreWins)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game edit type')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.updateGameType(edit.gameId, edit.gameType)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game edit player')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game remove player')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.removeGamePlayer(edit.gameId, edit.playerId)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game edit score')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.updateGameScore(edit.gameId, edit.playerId, edit.scoreId, edit.score)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'game remove score')
-            .pipe(takeUntil(exited$))
-            .subscribe(edit => GamesService.removeGameScore(edit.gameId, edit.playerId, edit.scoreId)
-                .then(newGame => hotel.updateGame(newGame))
-                .catch(err => {
-                    hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
-                }),
-            );
-
-        fromEventTyped(socket, 'disconnect')
-            .pipe(takeUntil(exited$))
-            .subscribe(() => {
-                exited$.next();
-                hotel.removeConnection(socket, gameId).catch(err => console.error('removeConnection error:', err));
-            });
-
-        fromEventTyped(socket, 'game exit')
-            .pipe(takeUntil(exited$))
-            .subscribe(() => {
-                exited$.next();
-                hotel.removeConnection(socket, gameId).catch(err => console.error('removeConnection error:', err));
-            });
-
-        return;
-    });
-};
-
-io.on('connection', (socket: Socket) => onConnection(socket));
-
-http.listen(port, () => console.log(`Listening on port ${port}!`));
+io.on('connection', (socket: Socket) => onConnection(socket, hotel));
