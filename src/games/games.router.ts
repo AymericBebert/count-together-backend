@@ -10,6 +10,7 @@ import {
     IGameRemoveScore,
     pickIGame,
 } from '../model/game';
+import {errorString} from '../utils/error-string';
 import {generateToken} from '../utils/generate-token';
 import {GamesService} from './games.service';
 
@@ -28,7 +29,7 @@ router.post<NoParams, WithError<IGame>, IGame>('/new-game', (request, response) 
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/new-game', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -38,7 +39,7 @@ router.post<{ gameId: string }, WithError<IGame>>('/duplicate/:gameId', (request
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn(`Error in POST /duplicate/${gameId}`, err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -48,7 +49,7 @@ router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, resp
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn(`Error in GET /games/game/${gameId}`, err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -57,7 +58,7 @@ router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, resp
 //         .then(games => response.send({result: games, error: ''}))
 //         .catch(err => {
 //             console.warn('Error in GET /games/games', err);
-//             response.status(500).send({result: [], error: err.toString()});
+//             response.status(500).send({result: [], error: errorString(err)});
 //         });
 // });
 
@@ -71,7 +72,7 @@ router.put<{ gameId: string }, WithError<IGame>, IGame>('/game/:gameId', (reques
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn(`Error in PUT /games/game/${gameId}`, err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -82,7 +83,7 @@ router.delete<{ gameId: string }, WithError<null>>('/game/:gameId', (request, re
         .then(() => response.send({result: null, error: ''}))
         .catch(err => {
             console.warn(`Error in DELETE /games/game/${gameId}`, err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -92,7 +93,7 @@ router.post<NoParams, WithError<IGame>, IGameEditName>('/game-edit/name', (reque
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/name', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -102,7 +103,7 @@ router.post<NoParams, WithError<IGame>, IGameEditGameType>('/game-edit/type', (r
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/type', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -112,7 +113,7 @@ router.post<NoParams, WithError<IGame>, IGameEditWin>('/game-edit/win', (request
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/win', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -122,7 +123,7 @@ router.post<NoParams, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (r
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/player', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -132,7 +133,7 @@ router.delete<NoParams, WithError<IGame>, IGameRemovePlayer>('/game-edit/player'
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in DELETE /games/game-edit/player', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -142,7 +143,7 @@ router.post<NoParams, WithError<IGame>, IGameEditScore>('/game-edit/score', (req
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in POST /games/game-edit/score', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 
@@ -152,7 +153,7 @@ router.delete<NoParams, WithError<IGame>, IGameRemoveScore>('/game-edit/score', 
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn('Error in DELETE /games/game-edit/score', err);
-            response.status(500).send({result: null, error: err.toString()});
+            response.status(500).send({result: null, error: errorString(err)});
         });
 });
 

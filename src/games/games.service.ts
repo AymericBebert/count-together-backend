@@ -99,7 +99,7 @@ export class GamesService {
             const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
             for (const player of game.players) {
                 if (player.scores.length < maxScoreLength) {
-                    player.scores.push(...new Array(maxScoreLength - player.scores.length).fill(0));
+                    player.scores.push(...new Array<number>(maxScoreLength - player.scores.length).fill(0));
                 }
             }
         }
@@ -142,7 +142,7 @@ export class GamesService {
             game.players.push({name: playerName, scores: []});
             if (game.gameType === 'smallScores' || game.gameType === 'winOrLose') {
                 const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
-                game.players[game.players.length - 1].scores.push(...new Array(maxScoreLength).fill(0));
+                game.players[game.players.length - 1].scores.push(...new Array<number>(maxScoreLength).fill(0));
             }
         } else {
             game.players[playerId].name = playerName;
@@ -182,7 +182,7 @@ export class GamesService {
         if (playerId === -1) {
             for (const player of game.players) {
                 if (player.scores.length < scoreId + 1) {
-                    player.scores.push(...new Array(scoreId + 1 - player.scores.length).fill(0));
+                    player.scores.push(...new Array<number>(scoreId + 1 - player.scores.length).fill(0));
                 }
             }
         } else {

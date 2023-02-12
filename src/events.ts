@@ -51,7 +51,8 @@ export function emitEvent<T extends keyof EmittedEventTypes>(
     ...data: EmittedEventTypes[T][]
 ): void {
     if (config.debugSocket) {
-        console.log(`socket< ${eventName}: ${JSON.stringify(data[0])?.substr(0, 999)}`);
+        console.log(`socket< ${eventName}: ${JSON.stringify(data[0])?.substring(0, 999)}`);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     emitter.emit(eventName, ...(data as any));
 }
