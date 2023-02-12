@@ -1,11 +1,10 @@
-import express from 'express';
-import {NextFunction} from 'express-serve-static-core';
+import express, {NextFunction} from 'express';
 
 export const loggerMiddleware = (request: express.Request, response: express.Response, next: NextFunction): void => {
-    console.log(`${request.method}`
+    const bodyStr = JSON.stringify(request.body);
+    console.log(`http> ${request.method}`
         + ` - ${request.path}`
         + ` - query ${JSON.stringify(request.query)}`
-        + ` - body ${JSON.stringify(request.body)}`
-        + '');
+        + ` - body ${bodyStr.length > 2000 ? bodyStr.slice(0, 2000) + '[...]' : bodyStr}`);
     next();
 };

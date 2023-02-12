@@ -4,6 +4,7 @@ import {Socket} from 'socket.io';
 import {emitEvent, EmittedEventTypes, fromEventTyped, ReceivedEventTypes} from '../events';
 import {GamesService} from '../games/games.service';
 import {GameHotel} from '../live/game-hotel';
+import {errorString} from '../utils/error-string';
 
 export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventTypes>, hotel: GameHotel): void {
     console.log(`New connection from ${socket.id}`);
@@ -22,7 +23,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, game.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -32,7 +33,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(() => hotel.deleteGame(gid))
                 .catch(err => {
                     hotel.sendGame(socket, gid);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -42,7 +43,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -52,7 +53,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -62,7 +63,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -72,7 +73,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -82,7 +83,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -92,7 +93,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 
@@ -102,7 +103,7 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 .then(newGame => hotel.updateGame(newGame))
                 .catch(err => {
                     hotel.sendGame(socket, edit.gameId);
-                    emitEvent(socket, 'display error', err.toString());
+                    emitEvent(socket, 'display error', errorString(err));
                 }),
             );
 

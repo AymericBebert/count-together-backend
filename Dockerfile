@@ -1,4 +1,4 @@
-FROM node:16.14.2-buster-slim AS builder
+FROM node:16.19.0-bullseye-slim AS builder
 
 RUN mkdir /count-together
 WORKDIR /count-together
@@ -14,7 +14,7 @@ RUN npm run build
 #
 # Go back from clean node image
 #
-FROM node:16.14.2-buster-slim
+FROM node:16.19.0-bullseye-slim
 
 RUN mkdir /count-together /count-together/node_modules /count-together/dist
 WORKDIR /count-together
