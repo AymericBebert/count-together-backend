@@ -1,58 +1,33 @@
-import {IPlayer, pickIPlayer} from './player';
+import mongoose from 'mongoose';
+import {GameType} from './game-type';
+import {pickPlayer, Player, PlayerDocument, playerSchema} from './player';
 
-export type GameType = 'free' | 'smallScores' | 'winOrLose';
-
-export interface IGame {
+export interface Game {
     gameId: string;
     name: string;
     gameType: GameType;
     lowerScoreWins: boolean;
-    players: IPlayer[];
+    players: Player[];
 }
 
-export const pickIGame = (game: IGame): IGame => ({
+export interface StoredGame extends Omit<Game, 'players'> {
+    players: PlayerDocument[];
+}
+
+export const gameSchema = new mongoose.Schema<StoredGame>({
+    gameId: {type: String, required: true, unique: true, index: true},
+    name: String,
+    gameType: String,
+    lowerScoreWins: Boolean,
+    players: [playerSchema],
+});
+
+export const GameM = mongoose.model<StoredGame>('Game', gameSchema);
+
+export const pickGame = (game: Game): Game => ({
     gameId: game.gameId,
     name: game.name,
     gameType: game.gameType,
     lowerScoreWins: game.lowerScoreWins,
-    players: [...game.players.map(p => pickIPlayer(p))],
+    players: [...game.players.map(p => pickPlayer(p))],
 });
-
-export interface IGameEditName {
-    gameId: string;
-    name: string;
-}
-
-export interface IGameEditWin {
-    gameId: string;
-    lowerScoreWins: boolean;
-}
-
-export interface IGameEditGameType {
-    gameId: string;
-    gameType: GameType;
-}
-
-export interface IGameEditPlayer {
-    gameId: string;
-    playerId: number;
-    playerName: string;
-}
-
-export interface IGameRemovePlayer {
-    gameId: string;
-    playerId: number;
-}
-
-export interface IGameEditScore {
-    gameId: string;
-    playerId: number;
-    scoreId: number;
-    score: number;
-}
-
-export interface IGameRemoveScore {
-    gameId: string;
-    playerId: number;
-    scoreId: number;
-}

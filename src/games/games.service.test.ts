@@ -1,5 +1,5 @@
 import {Connection} from 'mongoose';
-import {IGame} from '../model/game';
+import {Game} from '../model/game';
 import {closeTestMongoose, connectTestMongoose} from '../utils/mongodb-test-connect';
 import {GamesService} from './games.service';
 
@@ -25,7 +25,7 @@ describe('GamesService', () => {
     describe('Games service tests', () => {
 
         it('games CRUD', async () => {
-            const game01: IGame = {
+            const game01: Game = {
                 gameId: 'test_game',
                 name: 'Test Game',
                 gameType: 'free',
@@ -72,7 +72,7 @@ describe('GamesService', () => {
         });
 
         it('games edit lowerScoreWins', async () => {
-            const game01: IGame = {
+            const game01: Game = {
                 gameId: 'test_game',
                 name: 'Test Game',
                 gameType: 'free',
@@ -81,7 +81,7 @@ describe('GamesService', () => {
             };
 
             await GamesService.addGame(game01);
-            let game01bis: IGame | null;
+            let game01bis: Game | null;
 
             await GamesService.updateGameWin(game01.gameId, true);
             game01bis = await GamesService.getGameById(game01.gameId);
@@ -93,7 +93,7 @@ describe('GamesService', () => {
         });
 
         it('games edit name', async () => {
-            const game01: IGame = {
+            const game01: Game = {
                 gameId: 'test_game',
                 name: 'Test Game',
                 gameType: 'free',
@@ -109,7 +109,7 @@ describe('GamesService', () => {
         });
 
         it('games edit players', async () => {
-            const game01: IGame = {
+            const game01: Game = {
                 gameId: 'test_game',
                 name: 'Test Game',
                 gameType: 'free',
@@ -118,7 +118,7 @@ describe('GamesService', () => {
             };
 
             await GamesService.addGame(game01);
-            let game01bis: IGame | null;
+            let game01bis: Game | null;
 
             await GamesService.updateGamePlayer(game01.gameId, 0, 'New player_');
             await GamesService.updateGamePlayer(game01.gameId, 0, 'New player');
@@ -163,7 +163,7 @@ describe('GamesService', () => {
         });
 
         it('games edit type - winOrLose', async () => {
-            const game01: IGame = {
+            const game01: Game = {
                 gameId: 'test_game',
                 name: 'Test Game',
                 gameType: 'free',

@@ -1,4 +1,4 @@
-FROM node:18.16.0-bullseye-slim AS builder
+FROM node:20.10.0-bookworm-slim AS builder
 
 RUN mkdir /count-together
 WORKDIR /count-together

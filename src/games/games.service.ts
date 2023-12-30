@@ -1,47 +1,24 @@
-import mongoose from 'mongoose';
-import {GameType, IGame, pickIGame} from '../model/game';
-import {IPlayer} from '../model/player';
+import {Game, GameM, pickGame} from '../model/game';
+import {GameType} from '../model/game-type';
+import {PlayerDocument} from '../model/player';
 import {generateToken} from '../utils/generate-token';
-
-const playerSchema = new mongoose.Schema({
-    name: String,
-    scores: [Number],
-});
-
-interface IPlayerModel extends IPlayer, mongoose.Document {
-    scores: mongoose.Types.Array<number | null>;
-}
-
-const gameSchema = new mongoose.Schema({
-    gameId: {type: String, required: true, unique: true, index: true},
-    name: String,
-    gameType: String,
-    lowerScoreWins: Boolean,
-    players: [playerSchema],
-});
-
-interface IGameModel extends IGame, mongoose.Document {
-    players: mongoose.Types.Array<IPlayerModel>;
-}
-
-const Game = mongoose.model<IGameModel>('Game', gameSchema);
 
 export class GamesService {
 
-    public static async addGame(game: IGame): Promise<IGame> {
-        return new Game(game).save().then(g => pickIGame(g));
+    public static async addGame(game: Game): Promise<Game> {
+        return new GameM(game).save().then(g => pickGame(g));
     }
 
-    public static async getGameById(gameId: string): Promise<IGame | null> {
-        return Game.findOne({gameId}).then(g => g ? pickIGame(g) : null);
+    public static async getGameById(gameId: string): Promise<Game | null> {
+        return GameM.findOne({gameId}).then(g => g ? pickGame(g) : null);
     }
 
-    public static async getGames(): Promise<IGame[]> {
-        return Game.find({}).then(gs => gs.map(g => pickIGame(g)));
+    public static async getGames(): Promise<Game[]> {
+        return GameM.find({}).then(gs => gs.map(g => pickGame(g)));
     }
 
-    public static async updateGame(newGame: IGame): Promise<IGame> {
-        const game = await Game.findOne({gameId: newGame.gameId});
+    public static async updateGame(newGame: Game): Promise<Game> {
+        const game = await GameM.findOne({gameId: newGame.gameId});
         if (!game) {
             throw new Error(`The game with id "${newGame.gameId}" does not exist`);
         }
@@ -50,18 +27,18 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${newGame.gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
     public static async deleteGame(gameId: string): Promise<void> {
-        return Game.deleteOne({gameId}).then(() => void 0);
+        await GameM.deleteOne({gameId});
     }
 
     public static async deleteAllGames(): Promise<void> {
-        return Game.deleteMany({}).then(() => void 0);
+        await GameM.deleteMany({});
     }
 
-    public static async duplicateGame(gameId: string): Promise<IGame | null> {
+    public static async duplicateGame(gameId: string): Promise<Game | null> {
         const game = await GamesService.getGameById(gameId);
         if (!game) {
             throw new Error('Cannot duplicate: did not find game');
@@ -77,8 +54,8 @@ export class GamesService {
         });
     }
 
-    public static async updateGameName(gameId: string, name: string): Promise<IGame> {
-        const res = await Game.findOneAndUpdate(
+    public static async updateGameName(gameId: string, name: string): Promise<Game> {
+        const res = await GameM.findOneAndUpdate(
             {gameId: gameId},
             {name: name},
             {new: true},
@@ -86,11 +63,11 @@ export class GamesService {
         if (!res) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
-    public static async updateGameType(gameId: string, gameType: GameType): Promise<IGame> {
-        const game = await Game.findOne({gameId: gameId});
+    public static async updateGameType(gameId: string, gameType: GameType): Promise<Game> {
+        const game = await GameM.findOne({gameId: gameId});
         if (!game) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
@@ -116,11 +93,11 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
-    public static async updateGameWin(gameId: string, lowerScoreWins: boolean): Promise<IGame> {
-        const res = await Game.findOneAndUpdate(
+    public static async updateGameWin(gameId: string, lowerScoreWins: boolean): Promise<Game> {
+        const res = await GameM.findOneAndUpdate(
             {gameId: gameId},
             {lowerScoreWins: lowerScoreWins},
             {new: true},
@@ -128,18 +105,18 @@ export class GamesService {
         if (!res) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
-    public static async updateGamePlayer(gameId: string, playerId: number, playerName: string): Promise<IGame> {
-        const game = await Game.findOne({gameId});
+    public static async updateGamePlayer(gameId: string, playerId: number, playerName: string): Promise<Game> {
+        const game = await GameM.findOne({gameId});
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
         if (playerId > game.players.length) {
             throw new Error(`playerId ${playerId} is too large`);
         } else if (playerId === game.players.length) {
-            game.players.push({name: playerName, scores: []});
+            game.players.push({name: playerName, scores: []} as unknown as PlayerDocument);
             if (game.gameType === 'smallScores' || game.gameType === 'winOrLose') {
                 const maxScoreLength = Math.max(...game.players.map(p => p.scores.length));
                 game.players[game.players.length - 1].scores.push(...new Array<number>(maxScoreLength).fill(0));
@@ -151,11 +128,11 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
-    public static async removeGamePlayer(gameId: string, playerId: number): Promise<IGame> {
-        const game = await Game.findOne({gameId});
+    public static async removeGamePlayer(gameId: string, playerId: number): Promise<Game> {
+        const game = await GameM.findOne({gameId});
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
@@ -170,12 +147,12 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
     public static async updateGameScore(gameId: string, playerId: number, scoreId: number, score: number):
-        Promise<IGame> {
-        const game = await Game.findOne({gameId});
+        Promise<Game> {
+        const game = await GameM.findOne({gameId});
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
@@ -202,11 +179,11 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
-    public static async removeGameScore(gameId: string, playerId: number, scoreId: number): Promise<IGame> {
-        const game = await Game.findOne({gameId});
+    public static async removeGameScore(gameId: string, playerId: number, scoreId: number): Promise<Game> {
+        const game = await GameM.findOne({gameId});
         if (game === null) {
             throw new Error(`The game with id "${gameId}" does not exist`);
         }
@@ -222,7 +199,7 @@ export class GamesService {
                 throw new Error(`The player with id "${playerId}" does not exist`);
             }
             if (player.scores.length === 0) {
-                return pickIGame(game);
+                return pickGame(game);
             } else if (scoreId > player.scores.length) {
                 throw new Error(`scoreId ${scoreId} is too large`);
             } else if (scoreId === player.scores.length - 1) {
@@ -235,7 +212,7 @@ export class GamesService {
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
         }
-        return pickIGame(res);
+        return pickGame(res);
     }
 
     private static duplicateGameName(original: string): string {

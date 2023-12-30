@@ -2,21 +2,16 @@ import mongoose, {Connection} from 'mongoose';
 import {config} from '../config';
 import {errorString} from './error-string';
 
-mongoose.set('strictQuery', true);
-
-// MongoDB connection
-const MONGODB_CONNECTION = `mongodb://${config.mongoHost}:${config.mongoPort}/count?authSource=admin`;
-
 export async function connectMongooseWithRetry(maxTries = -1, uri?: string): Promise<Connection | null> {
-    const connectUri = uri || MONGODB_CONNECTION;
+    const connectUri = uri || config.mongoUrl;
     let tries = 0;
+
+    mongoose.set('strictQuery', true);
 
     while (tries < maxTries || maxTries < 0) {
         tries += 1;
 
         const mongooseConnect = await mongoose.connect(connectUri, {
-            user: config.mongoUser,
-            pass: config.mongoPass,
             connectTimeoutMS: 3000,
         }).catch(err => console.error(`Mongoose connection error with ${connectUri}: ${errorString(err)}`));
 

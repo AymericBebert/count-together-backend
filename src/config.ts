@@ -7,10 +7,8 @@ export const config = {
     sioAllowedOrigin: process.env.SIO_ALLOWED_ORIGIN || '',
     debugSocket: !!(process.env.DEBUG_SOCKET),
 
-    mongoHost: process.env.MONGO_HOST || 'localhost',
-    mongoPort: parseInt(process.env.MONGO_PORT || '27017', 10),
-    mongoUser: process.env.MONGO_USER || '',
-    mongoPass: process.env.MONGO_PASS || '',
+    mongoUrl: process.env.MONGO_URL || 'mongodb://localhost:27017/count?authSource=admin',
+    mongoTestURL: process.env.MONGO_TEST_URL || 'mongodb://localhost:27017/count-test-PLACEHOLDER?authSource=admin',
 
     mongoTestHost: process.env.MONGO_TEST_HOST || 'localhost',
     mongoTestPort: parseInt(process.env.MONGO_TEST_PORT || '27017', 10),
