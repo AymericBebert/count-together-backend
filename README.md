@@ -4,7 +4,10 @@ Backend for count-together project
 
 ## Installation
 
-`cp .env.dist .env`
+```shell
+cp .env.dist .env
+npm install
+```
 
 ## Run the server
 
@@ -27,17 +30,14 @@ npm run lint
 With auto fix
 
 ```shell
-npm run lint-fix
+npm run lint:fix
 ```
 
-## Build new version
+## Build and publish a new version
 
-We use GitHub Actions on tags to build the docker image
+We use GitHub Actions to build the new version on release.
 
-```shell
-git tag 1.0.0
-git push origin 1.0.0
-```
+In order to build a new version, you need to create a new release on GitHub, using semver tags.
 
 ## Backup
 
