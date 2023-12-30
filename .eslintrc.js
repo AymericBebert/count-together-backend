@@ -18,6 +18,8 @@ module.exports = {
         "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     rules: {
+        "max-len": ["error", {code: 120}],
+        "semi": ["error", "always"],
         "@typescript-eslint/interface-name-prefix": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/quotes": [

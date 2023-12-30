@@ -67,7 +67,10 @@ app.use(customErrorHandler);
 
 // HTTP server
 const http: HttpServer = createServer(app);
-http.listen(config.port, () => console.log(`Count Together backend ${config.version} listening on port ${config.port}`));
+http.listen(
+    config.port,
+    () => console.log(`Count Together backend ${config.version} listening on port ${config.port}`),
+);
 
 // Socket.IO server with CORS config
 const io = new Server(
