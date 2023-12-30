@@ -41,7 +41,7 @@ export class GamesService {
         await GameM.deleteMany({});
     }
 
-    public static async duplicateGame(gameId: string): Promise<Game | null> {
+    public static async duplicateGame(gameId: string): Promise<Game> {
         const game = await GamesService.getGameById(gameId);
         if (!game) {
             throw new Error('Cannot duplicate: did not find game');
