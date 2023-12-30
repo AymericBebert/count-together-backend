@@ -6,7 +6,10 @@ import {generateToken} from '../utils/generate-token';
 export class GamesService {
 
     public static async addGame(game: Game): Promise<Game> {
-        return new GameM(game).save().then(g => pickGame(g));
+        if (await GameM.findOne({gameId: game.gameId})) {
+            throw new Error(`A game with id "${game.gameId}" already exists`);
+        }
+        return GameM.create(game).then(g => pickGame(g));
     }
 
     public static async getGameById(gameId: string): Promise<Game | null> {
