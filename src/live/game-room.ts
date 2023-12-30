@@ -2,22 +2,22 @@ import {Subject} from 'rxjs';
 import socketIO from 'socket.io';
 import {config} from '../config';
 import {EmittedEventTypes} from '../events';
-import {IGame} from '../model/game';
+import {Game} from '../model/game';
 
 export class GameRoom {
     public destroy$: Subject<void> = new Subject<void>();
     private readonly gameId: string;
 
     constructor(private readonly io: socketIO.Server,
-                private _game: IGame) {
+                private _game: Game) {
         this.gameId = _game.gameId;
     }
 
-    public get game(): IGame {
+    public get game(): Game {
         return this._game;
     }
 
-    public set game(game: IGame) {
+    public set game(game: Game) {
         if (game.gameId === this.gameId) {
             this._game = game;
         } else {

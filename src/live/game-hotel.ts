@@ -1,7 +1,7 @@
 import socketIO from 'socket.io';
 import {emitEvent} from '../events';
 import {GamesService} from '../games/games.service';
-import {IGame} from '../model/game';
+import {Game} from '../model/game';
 import {GameRoom} from './game-room';
 
 export class GameHotel {
@@ -50,7 +50,7 @@ export class GameHotel {
         return socket.emit('game', this.rooms[gameId]);
     }
 
-    public updateGame(game: IGame): void {
+    public updateGame(game: Game): void {
         if (!this.rooms[game.gameId]) {
             return;
         }

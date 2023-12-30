@@ -1,14 +1,23 @@
-import {Connection} from 'mongoose';
+import mongoose, {Connection} from 'mongoose';
 import {config} from '../config';
-import {connectMongooseWithRetry} from './mongodb-connect';
+import {errorString} from './error-string';
 
 export async function connectTestMongoose(dbname: string): Promise<Connection> {
-    const testUri = `mongodb://${config.mongoTestHost}:${config.mongoTestPort}/count-test-${dbname}?authSource=admin`;
-    const connection = await connectMongooseWithRetry(1, testUri);
-    if (!connection) {
+    const testUri = config.mongoTestURL.replace('PLACEHOLDER', dbname);
+
+    mongoose.set('strictQuery', true);
+
+    const mongooseConnect = await mongoose.connect(testUri, {
+        // connectTimeoutMS: 30_000,
+        // socketTimeoutMS: 30_000,
+        bufferCommands: false,
+        autoIndex: false,
+    }).catch(err => console.error(`Mongoose connection error with ${testUri}: ${errorString(err)}`));
+
+    if (!mongooseConnect) {
         throw new Error('Mongoose could not connect');
     }
-    return connection;
+    return mongooseConnect.connection;
 }
 
 export async function closeTestMongoose(connection: Connection) {

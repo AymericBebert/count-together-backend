@@ -3,35 +3,39 @@ import {tap} from 'rxjs/operators';
 import {Socket} from 'socket.io';
 import {config} from './config';
 import {
-    IGame,
-    IGameEditGameType,
-    IGameEditName,
-    IGameEditPlayer,
-    IGameEditScore,
-    IGameEditWin,
-    IGameRemovePlayer,
-    IGameRemoveScore,
+    Game,
+
+
+
+
 } from './model/game';
+import {
+    GameEditGameType, GameEditName,
+    GameEditPlayer,
+    GameEditScore, GameEditWin,
+    GameRemovePlayer,
+    GameRemoveScore
+} from './model/game-edit-dtos';
 
 export interface ReceivedEventTypes {
     'disconnect': void;
     'game join': string;
     'game exit': void;
-    'game update': IGame;
+    'game update': Game;
     'game delete': string;
-    'game edit name': IGameEditName;
-    'game edit win': IGameEditWin;
-    'game edit type': IGameEditGameType;
-    'game edit player': IGameEditPlayer;
-    'game remove player': IGameRemovePlayer;
-    'game edit score': IGameEditScore;
-    'game remove score': IGameRemoveScore;
+    'game edit name': GameEditName;
+    'game edit win': GameEditWin;
+    'game edit type': GameEditGameType;
+    'game edit player': GameEditPlayer;
+    'game remove player': GameRemovePlayer;
+    'game edit score': GameEditScore;
+    'game remove score': GameRemoveScore;
 }
 
 export interface EmittedEventTypes {
     'game joined': string;
     'game exited': string;
-    'game': IGame;
+    'game': Game;
     'game deleted': string;
     'display error': string;
 }
@@ -40,7 +44,7 @@ export function fromEventTyped<T extends keyof ReceivedEventTypes>(
     target: Socket<ReceivedEventTypes, any>,
     eventName: T,
 ): Observable<ReceivedEventTypes[T]> {
-    return fromEvent<ReceivedEventTypes[T]>(target, eventName).pipe(
+    return (fromEvent(target, eventName) as Observable<ReceivedEventTypes[T]>).pipe(
         tap(data => config.debugSocket && console.log(`socket> ${eventName}: ${JSON.stringify(data)}`)),
     );
 }

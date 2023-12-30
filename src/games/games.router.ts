@@ -1,15 +1,14 @@
 import {Router} from 'express';
+import {Game, pickGame,} from '../model/game';
 import {
-    IGame,
-    IGameEditGameType,
-    IGameEditName,
-    IGameEditPlayer,
-    IGameEditScore,
-    IGameEditWin,
-    IGameRemovePlayer,
-    IGameRemoveScore,
-    pickIGame,
-} from '../model/game';
+    GameEditGameType,
+    GameEditName,
+    GameEditPlayer,
+    GameEditScore,
+    GameEditWin,
+    GameRemovePlayer,
+    GameRemoveScore
+} from '../model/game-edit-dtos';
 import {errorString} from '../utils/error-string';
 import {generateToken} from '../utils/generate-token';
 import {GamesService} from './games.service';
@@ -23,7 +22,7 @@ interface WithError<T> {
 
 const router = Router();
 
-router.post<NoParams, WithError<IGame>, IGame>('/new-game', (request, response) => {
+router.post<NoParams, WithError<Game>, Game>('/new-game', (request, response) => {
     const gameId = generateToken(8);
     GamesService.addGame({...request.body, gameId})
         .then(game => response.send({result: game, error: ''}))
@@ -33,7 +32,7 @@ router.post<NoParams, WithError<IGame>, IGame>('/new-game', (request, response) 
         });
 });
 
-router.post<{ gameId: string }, WithError<IGame>>('/duplicate/:gameId', (request, response) => {
+router.post<{ gameId: string }, WithError<Game>>('/duplicate/:gameId', (request, response) => {
     const gameId = request.params.gameId;
     GamesService.duplicateGame(gameId)
         .then(game => response.send({result: game, error: ''}))
@@ -43,7 +42,7 @@ router.post<{ gameId: string }, WithError<IGame>>('/duplicate/:gameId', (request
         });
 });
 
-router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, response) => {
+router.get<{ gameId: string }, WithError<Game>>('/game/:gameId', (request, response) => {
     const gameId = request.params.gameId;
     GamesService.getGameById(gameId)
         .then(game => response.send({result: game, error: ''}))
@@ -62,13 +61,13 @@ router.get<{ gameId: string }, WithError<IGame>>('/game/:gameId', (request, resp
 //         });
 // });
 
-router.put<{ gameId: string }, WithError<IGame>, IGame>('/game/:gameId', (request, response) => {
+router.put<{ gameId: string }, WithError<Game>, Game>('/game/:gameId', (request, response) => {
     const gameId = request.params.gameId;
     if (gameId !== request.body.gameId) {
         response.status(400).send({result: null, error: 'Game ID mismatch'});
         return;
     }
-    GamesService.updateGame(pickIGame(request.body))
+    GamesService.updateGame(pickGame(request.body))
         .then(game => response.send({result: game, error: ''}))
         .catch(err => {
             console.warn(`Error in PUT /games/game/${gameId}`, err);
@@ -87,7 +86,7 @@ router.delete<{ gameId: string }, WithError<null>>('/game/:gameId', (request, re
         });
 });
 
-router.post<NoParams, WithError<IGame>, IGameEditName>('/game-edit/name', (request, response) => {
+router.post<NoParams, WithError<Game>, GameEditName>('/game-edit/name', (request, response) => {
     const edit = request.body;
     GamesService.updateGameName(edit.gameId, edit.name)
         .then(game => response.send({result: game, error: ''}))
@@ -97,7 +96,7 @@ router.post<NoParams, WithError<IGame>, IGameEditName>('/game-edit/name', (reque
         });
 });
 
-router.post<NoParams, WithError<IGame>, IGameEditGameType>('/game-edit/type', (request, response) => {
+router.post<NoParams, WithError<Game>, GameEditGameType>('/game-edit/type', (request, response) => {
     const edit = request.body;
     GamesService.updateGameType(edit.gameId, edit.gameType)
         .then(game => response.send({result: game, error: ''}))
@@ -107,7 +106,7 @@ router.post<NoParams, WithError<IGame>, IGameEditGameType>('/game-edit/type', (r
         });
 });
 
-router.post<NoParams, WithError<IGame>, IGameEditWin>('/game-edit/win', (request, response) => {
+router.post<NoParams, WithError<Game>, GameEditWin>('/game-edit/win', (request, response) => {
     const edit = request.body;
     GamesService.updateGameWin(edit.gameId, edit.lowerScoreWins)
         .then(game => response.send({result: game, error: ''}))
@@ -117,7 +116,7 @@ router.post<NoParams, WithError<IGame>, IGameEditWin>('/game-edit/win', (request
         });
 });
 
-router.post<NoParams, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (request, response) => {
+router.post<NoParams, WithError<Game>, GameEditPlayer>('/game-edit/player', (request, response) => {
     const edit = request.body;
     GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName)
         .then(game => response.send({result: game, error: ''}))
@@ -127,7 +126,7 @@ router.post<NoParams, WithError<IGame>, IGameEditPlayer>('/game-edit/player', (r
         });
 });
 
-router.delete<NoParams, WithError<IGame>, IGameRemovePlayer>('/game-edit/player', (request, response) => {
+router.delete<NoParams, WithError<Game>, GameRemovePlayer>('/game-edit/player', (request, response) => {
     const edit = request.body;
     GamesService.removeGamePlayer(edit.gameId, edit.playerId)
         .then(game => response.send({result: game, error: ''}))
@@ -137,7 +136,7 @@ router.delete<NoParams, WithError<IGame>, IGameRemovePlayer>('/game-edit/player'
         });
 });
 
-router.post<NoParams, WithError<IGame>, IGameEditScore>('/game-edit/score', (request, response) => {
+router.post<NoParams, WithError<Game>, GameEditScore>('/game-edit/score', (request, response) => {
     const edit = request.body;
     GamesService.updateGameScore(edit.gameId, edit.playerId, edit.scoreId, edit.score)
         .then(game => response.send({result: game, error: ''}))
@@ -147,7 +146,7 @@ router.post<NoParams, WithError<IGame>, IGameEditScore>('/game-edit/score', (req
         });
 });
 
-router.delete<NoParams, WithError<IGame>, IGameRemoveScore>('/game-edit/score', (request, response) => {
+router.delete<NoParams, WithError<Game>, GameRemoveScore>('/game-edit/score', (request, response) => {
     const edit = request.body;
     GamesService.removeGameScore(edit.gameId, edit.playerId, edit.scoreId)
         .then(game => response.send({result: game, error: ''}))
