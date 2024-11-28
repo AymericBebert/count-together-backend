@@ -1,23 +1,24 @@
-FROM node:20.10.0-bookworm-slim AS builder
+FROM node:22.11.0-bookworm-slim AS builder
 
-RUN mkdir /count-together
 WORKDIR /count-together
 
-COPY package.json package-lock.json tsconfig.json jest.config.js ./
+COPY package.json package-lock.json tsconfig.json ./
 
 RUN npm ci
 
 COPY . .
 
 RUN npm run build
+RUN rm -rf node_modules
+RUN npm ci --production
 
 #
 # Go back from clean node image
 #
-FROM node:20.10.0-bookworm-slim
+FROM node:22.11.0-bookworm-slim
 
-RUN mkdir /count-together /count-together/node_modules /count-together/dist
 WORKDIR /count-together
+RUN mkdir /count-together/node_modules /count-together/dist
 
 COPY --from=builder ["/count-together/package.json", "/count-together/package-lock.json", "./"]
 COPY --from=builder /count-together/node_modules ./node_modules/

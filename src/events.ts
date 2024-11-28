@@ -2,17 +2,13 @@ import {fromEvent, Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {Socket} from 'socket.io';
 import {config} from './config';
+import {Game} from './model/game';
 import {
-    Game,
-
-
-
-
-} from './model/game';
-import {
-    GameEditGameType, GameEditName,
+    GameEditGameType,
+    GameEditName,
     GameEditPlayer,
-    GameEditScore, GameEditWin,
+    GameEditScore,
+    GameEditWin,
     GameRemovePlayer,
     GameRemoveScore
 } from './model/game-edit-dtos';

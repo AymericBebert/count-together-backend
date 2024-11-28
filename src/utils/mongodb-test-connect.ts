@@ -22,5 +22,5 @@ export async function connectTestMongoose(dbname: string): Promise<Connection> {
 
 export async function closeTestMongoose(connection: Connection) {
     await connection.dropDatabase();
-    await connection.close(true).catch(() => console.warn(`Force close for db ${connection.db.databaseName}`));
+    await connection.close(true).catch(() => console.warn(`Force close for db ${connection.db?.databaseName}`));
 }
