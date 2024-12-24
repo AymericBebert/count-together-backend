@@ -21,6 +21,16 @@ export interface GameEditPlayer {
     playerName: string;
 }
 
+export interface PlayerEdition {
+    oldPlayerId: number;
+    playerName: string;
+}
+
+export interface GameEditPlayers {
+    gameId: string;
+    players: PlayerEdition[];
+}
+
 export interface GameRemovePlayer {
     gameId: string;
     playerId: number;

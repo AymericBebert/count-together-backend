@@ -5,6 +5,7 @@ import {
     GameEditGameType,
     GameEditName,
     GameEditPlayer,
+    GameEditPlayers,
     GameEditScore,
     GameEditWin,
     GameRemovePlayer,
@@ -113,6 +114,15 @@ router.post<NoParams, Game, GameEditPlayer>(
     asyncHandler(async (request, response) => {
         const edit = request.body;
         const game = await GamesService.updateGamePlayer(edit.gameId, edit.playerId, edit.playerName);
+        response.send(game);
+    }),
+);
+
+router.post<NoParams, Game, GameEditPlayers>(
+    '/game-edit/players',
+    asyncHandler(async (request, response) => {
+        const edit = request.body;
+        const game = await GamesService.updateGamePlayers(edit.gameId, edit.players);
         response.send(game);
     }),
 );

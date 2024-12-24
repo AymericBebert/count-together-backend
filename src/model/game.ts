@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, {HydratedDocument} from 'mongoose';
 import {GameType} from './game-type';
 import {pickPlayer, Player, PlayerDocument, playerSchema} from './player';
 
@@ -23,6 +23,8 @@ export const gameSchema = new mongoose.Schema<StoredGame>({
 });
 
 export const GameM = mongoose.model<StoredGame>('Game', gameSchema);
+
+export type GameDocument = HydratedDocument<StoredGame>
 
 export const pickGame = (game: Game): Game => ({
     gameId: game.gameId,
