@@ -77,6 +77,16 @@ export function onConnection(socket: Socket<ReceivedEventTypes, EmittedEventType
                 }),
             );
 
+        fromEventTyped(socket, 'game edit players')
+            .pipe(takeUntil(exited$))
+            .subscribe(edit => GamesService.updateGamePlayers(edit.gameId, edit.players)
+                .then(newGame => hotel.updateGame(newGame))
+                .catch(err => {
+                    hotel.sendGame(socket, edit.gameId);
+                    emitEvent(socket, 'display error', errorString(err));
+                }),
+            );
+
         fromEventTyped(socket, 'game remove player')
             .pipe(takeUntil(exited$))
             .subscribe(edit => GamesService.removeGamePlayer(edit.gameId, edit.playerId)

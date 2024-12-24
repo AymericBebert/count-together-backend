@@ -7,6 +7,7 @@ import {
     GameEditGameType,
     GameEditName,
     GameEditPlayer,
+    GameEditPlayers,
     GameEditScore,
     GameEditWin,
     GameRemovePlayer,
@@ -23,6 +24,7 @@ export interface ReceivedEventTypes {
     'game edit win': GameEditWin;
     'game edit type': GameEditGameType;
     'game edit player': GameEditPlayer;
+    'game edit players': GameEditPlayers;
     'game remove player': GameRemovePlayer;
     'game edit score': GameEditScore;
     'game remove score': GameRemoveScore;
