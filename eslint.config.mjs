@@ -1,9 +1,10 @@
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin'
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import {defineConfig} from 'eslint/config';
 import tsEslint from 'typescript-eslint';
 
-export default tsEslint.config(
+export default defineConfig(
   {
     ignores: [
       "**/node_modules",
