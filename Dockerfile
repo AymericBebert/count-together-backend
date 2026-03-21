@@ -1,4 +1,4 @@
-FROM node:22.17.1-bookworm-slim AS builder
+FROM node:24.14.0-bookworm-slim AS builder
 
 WORKDIR /count-together
 
@@ -15,7 +15,7 @@ RUN npm ci --production
 #
 # Go back from clean node image
 #
-FROM node:22.17.1-bookworm-slim
+FROM node:24.14.0-bookworm-slim
 
 WORKDIR /count-together
 RUN mkdir /count-together/node_modules /count-together/dist
