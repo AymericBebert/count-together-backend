@@ -62,7 +62,7 @@ export class GamesService {
         const res = await GameM.findOneAndUpdate(
             {gameId: gameId},
             {name: name},
-            {new: true},
+            {returnDocument: 'after'},
         );
         if (!res) {
             throw new Error(`The game with id "${gameId}" does not exist`);
@@ -104,7 +104,7 @@ export class GamesService {
         const res = await GameM.findOneAndUpdate(
             {gameId: gameId},
             {lowerScoreWins: lowerScoreWins},
-            {new: true},
+            {returnDocument: 'after'},
         );
         if (!res) {
             throw new Error(`The game with id "${gameId}" does not exist`);
