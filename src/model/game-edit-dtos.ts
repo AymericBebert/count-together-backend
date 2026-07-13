@@ -10,6 +10,11 @@ export interface GameEditWin {
     lowerScoreWins: boolean;
 }
 
+export interface GameEditTurn {
+    gameId: string;
+    isTurnBased: boolean;
+}
+
 export interface GameEditGameType {
     gameId: string;
     gameType: GameType;

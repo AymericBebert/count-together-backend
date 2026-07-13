@@ -93,6 +93,9 @@ export class GamesService {
                 });
             }
         }
+        if (gameType !== 'free') {
+            game.isTurnBased = true;
+        }
         const res = await game.save();
         if (!res) {
             throw new Error(`Error updating game "${gameId}"`);
@@ -104,6 +107,18 @@ export class GamesService {
         const res = await GameM.findOneAndUpdate(
             {gameId: gameId},
             {lowerScoreWins: lowerScoreWins},
+            {returnDocument: 'after'},
+        );
+        if (!res) {
+            throw new Error(`The game with id "${gameId}" does not exist`);
+        }
+        return pickGame(res);
+    }
+
+    public static async updateGameTurn(gameId: string, isTurnBased: boolean): Promise<Game> {
+        const res = await GameM.findOneAndUpdate(
+            {gameId: gameId},
+            {isTurnBased: isTurnBased},
             {returnDocument: 'after'},
         );
         if (!res) {
@@ -175,9 +190,10 @@ export class GamesService {
         Promise<Game> {
         const game = await GamesService.getGameOrThrow(gameId);
         if (playerId === -1) {
+            const fillWith = game.gameType === 'free' ? null : 0;
             for (const player of game.players) {
                 if (player.scores.length < scoreId + 1) {
-                    player.scores.push(...new Array<number>(scoreId + 1 - player.scores.length).fill(0));
+                    player.scores.push(...new Array<number | null>(scoreId + 1 - player.scores.length).fill(fillWith));
                 }
             }
         } else {

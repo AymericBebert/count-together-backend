@@ -7,6 +7,7 @@ export interface Game {
     name: string;
     gameType: GameType;
     lowerScoreWins: boolean;
+    isTurnBased: boolean;
     players: Player[];
 }
 
@@ -19,6 +20,7 @@ export const gameSchema = new mongoose.Schema<StoredGame>({
     name: String,
     gameType: String,
     lowerScoreWins: Boolean,
+    isTurnBased: Boolean,
     players: [playerSchema],
 });
 
@@ -31,5 +33,6 @@ export const pickGame = (game: Game): Game => ({
     name: game.name,
     gameType: game.gameType,
     lowerScoreWins: game.lowerScoreWins,
+    isTurnBased: game.isTurnBased,
     players: [...game.players.map(p => pickPlayer(p))],
 });
