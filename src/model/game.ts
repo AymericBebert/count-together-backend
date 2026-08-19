@@ -8,6 +8,8 @@ export interface Game {
     gameType: GameType;
     lowerScoreWins: boolean;
     isTurnBased: boolean;
+    showTurnNumber: boolean;
+    turnNumberOffset: number;
     players: Player[];
 }
 
@@ -21,6 +23,8 @@ export const gameSchema = new mongoose.Schema<StoredGame>({
     gameType: String,
     lowerScoreWins: Boolean,
     isTurnBased: Boolean,
+    showTurnNumber: Boolean,
+    turnNumberOffset: Number,
     players: [playerSchema],
 });
 
@@ -34,5 +38,7 @@ export const pickGame = (game: Game): Game => ({
     gameType: game.gameType,
     lowerScoreWins: game.lowerScoreWins,
     isTurnBased: game.isTurnBased,
+    showTurnNumber: game.showTurnNumber,
+    turnNumberOffset: game.turnNumberOffset,
     players: [...game.players.map(p => pickPlayer(p))],
 });

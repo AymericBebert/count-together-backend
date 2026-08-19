@@ -13,6 +13,8 @@ export interface GameEditWin {
 export interface GameEditTurn {
     gameId: string;
     isTurnBased: boolean;
+    showTurnNumber: boolean;
+    turnNumberOffset: number;
 }
 
 export interface GameEditGameType {

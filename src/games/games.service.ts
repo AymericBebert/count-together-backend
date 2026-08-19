@@ -1,5 +1,5 @@
 import {Game, GameDocument, GameM, pickGame} from '../model/game';
-import {PlayerEdition} from '../model/game-edit-dtos';
+import {GameEditTurn, PlayerEdition} from '../model/game-edit-dtos';
 import {GameType} from '../model/game-type';
 import {Player, PlayerDocument} from '../model/player';
 import {generateToken} from '../utils/generate-token';
@@ -115,14 +115,18 @@ export class GamesService {
         return pickGame(res);
     }
 
-    public static async updateGameTurn(gameId: string, isTurnBased: boolean): Promise<Game> {
+    public static async updateGameTurn(gameEdit: GameEditTurn): Promise<Game> {
         const res = await GameM.findOneAndUpdate(
-            {gameId: gameId},
-            {isTurnBased: isTurnBased},
+            {gameId: gameEdit.gameId},
+            {
+                isTurnBased: gameEdit.isTurnBased,
+                showTurnNumber: gameEdit.showTurnNumber,
+                turnNumberOffset: gameEdit.turnNumberOffset,
+            },
             {returnDocument: 'after'},
         );
         if (!res) {
-            throw new Error(`The game with id "${gameId}" does not exist`);
+            throw new Error(`The game with id "${gameEdit.gameId}" does not exist`);
         }
         return pickGame(res);
     }
