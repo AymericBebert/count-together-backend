@@ -23,7 +23,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.7.4",
+    "mongoose": "^9.9.3",
     "rxjs": "^7.8.2",
     "socket.io": "~4.8.3"
   },
@@ -34,13 +34,13 @@
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/ws": "^8.18.1",
-    "@typescript-eslint/eslint-plugin": "^8.63.0",
-    "eslint": "^10.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "eslint": "^10.8.1",
     "jest": "^30.4.2",
-    "ts-jest": "^29.4.11",
+    "ts-jest": "^29.4.12",
     "ts-mockito": "^2.6.1",
-    "tsx": "^4.23.0",
+    "tsx": "^4.23.12",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.63.0"
+    "typescript-eslint": "^8.67.0"
   }
 }
